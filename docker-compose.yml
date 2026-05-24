@@ -1,0 +1,16 @@
+services:
+  brain-mcp:
+    build: .
+    image: brain-mcp:latest
+    volumes:
+      # Este repo (brain-tools) → /brain-tools
+      - .:/brain-tools:ro
+      # Repo privado (brain-data) → /brain-data
+      # Sobrescreva BRAIN_DATA_HOST_PATH se o repo de dados não está no caminho default.
+      - ${BRAIN_DATA_HOST_PATH:-../brain-data}:/brain-data:ro
+    environment:
+      BRAIN_TOOLS_PATH: /brain-tools
+      BRAIN_DATA_PATH:  /brain-data
+    restart: unless-stopped
+    stdin_open: true
+    tty: false
