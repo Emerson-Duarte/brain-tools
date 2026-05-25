@@ -7,7 +7,9 @@ argument-hint: "[--slug=<slug>] [--env=staging|prod]"
 
 Responsabilidade única: **confirmar que a mudança está saudável em produção (ou staging)** via smoke test + métricas.
 
-> **Multi-project:** itera sobre `state.projects[]`. Cada projeto pode ter deploy independente (frontend deploy ≠ backend deploy ≠ engine release). Smoke test é do **fluxo end-to-end** (que atravessa projetos). Métricas em cada provider listado por projeto. Veja `ai/skills/_global/sdd-multi-project.md`.
+> **Multi-project:** itera sobre `state.projects[]`. Cada projeto pode ter deploy independente (frontend deploy ≠ backend deploy ≠ engine release). Smoke test é do **fluxo end-to-end** (que atravessa projetos). Métricas em cada provider listado por projeto. Veja `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-multi-project.md`.
+
+> **Tools usadas:** referencie `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-tools.md` pra catálogo (built-in, MCP brain/Atlassian/github, sub-agents Explore/Plan/general-purpose, slash commands).
 
 ## 🛂 Pré-requisitos
 
@@ -16,7 +18,7 @@ Responsabilidade única: **confirmar que a mudança está saudável em produçã
 
 ## 📥 Carregamento de contexto
 
-Siga `_load-project-context.md`. Carregue:
+Siga `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/_load-project-context.md`. Carregue:
 
 - `observability.md` (providers — Sentry, PostHog, etc.)
 - `rollout.md` (feature flag, deploy stages)

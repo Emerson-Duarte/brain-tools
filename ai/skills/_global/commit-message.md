@@ -26,7 +26,7 @@ Mensagem de erro:
 > git config --global user.email "seu@email.com"
 > git config --global user.name "Seu Nome"
 > ```
-> Ou rode o bootstrap do brain environment se ainda não rodou (`~/.brain/scripts/environment-bootstrap.sh`).
+> Ou rode o bootstrap do brain environment se ainda não rodou (`$BRAIN_TOOLS_PATH/scripts/environment-bootstrap.sh`, default `/Users/dev/www/vakinha/brain-tools/scripts/environment-bootstrap.sh`).
 
 Não tente "consertar" silenciosamente nem prosseguir com identidade errada.
 

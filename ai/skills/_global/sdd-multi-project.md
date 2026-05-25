@@ -56,6 +56,39 @@ Quando `len(state.projects) == 1`:
 - Pula a lógica de cross-linking de PRs e merge ordering
 - Mas mantém schema com `projects[]` (sempre uma lista)
 
+## 🪜 Regra canônica de `merge_order`
+
+Esta é a **única fonte de verdade**. `/sdd-discover` deriva, `/sdd-merge` segue.
+
+**Default (sem perguntar ao usuário):**
+
+```
+1. Engine / lib compartilhada      (vakinha_api_engine, vakinha-client-kit)
+2. Backends (APIs)                  (vakinha-api, vakinha-admin-api)
+3. Frontends consumidores           (vakinha-app, vakinha-web, vakinha-bio-next, vakinha-admin-web, vakinha-da-sorte, vakinha-widget, vakinha-manager-web)
+```
+
+**Por quê essa ordem:**
+- Lib/engine release dispara bump em ambas APIs — release primeiro evita versões conflitantes
+- Backend deploy precisa estar live antes do frontend chamar endpoint novo
+- Frontend chamando endpoint inexistente = produção quebrada
+
+**Quando perguntar ao usuário:**
+- Ordem ambígua (ex.: 2 backends sem deps entre si)
+- Task envolve só 1 projeto (não há ordem)
+- Usuário explicitamente sobrescreveu via flag `--merge-order=<lista>`
+
+**Derivação automática em `/sdd-discover`:** mapeia cada `state.projects[i].role` pras 3 camadas acima. Atribui posição. Ordena. Salva em `state.merge_order` (lista de project names).
+
+Exemplo:
+```yaml
+projects:
+  - {name: vakinha-app, role: mobile}     # camada 3
+  - {name: vakinha-api, role: api}        # camada 2
+  - {name: vakinha-engine, role: lib}     # camada 1
+merge_order: [vakinha-engine, vakinha-api, vakinha-app]
+```
+
 ## 🚦 Falha parcial — o que fazer
 
 Se review/verify falha em **um projeto** mas passa nos outros:

@@ -7,7 +7,9 @@ argument-hint: "[--slug=<slug>]"
 
 Responsabilidade única: **destilar aprendizados gerais da sessão e salvar no brain via `/brain-capture`**. Marca a task como `done`.
 
-> **Multi-project:** considera aprendizados cross-project (contratos entre projetos, deps que não estavam óbvias, lacunas em CLAUDE.md de qualquer projeto envolvido). Veja `ai/skills/_global/sdd-multi-project.md`.
+> **Multi-project:** considera aprendizados cross-project (contratos entre projetos, deps que não estavam óbvias, lacunas em CLAUDE.md de qualquer projeto envolvido). Veja `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-multi-project.md`.
+
+> **Tools usadas:** referencie `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-tools.md` pra catálogo (built-in, MCP brain/Atlassian/github, sub-agents Explore/Plan/general-purpose, slash commands).
 
 ## 🛂 Pré-requisitos
 

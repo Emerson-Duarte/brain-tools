@@ -17,7 +17,7 @@ Mover um card Jira (e opcionalmente suas sub-tasks) de um estado para outro de f
 
 ## 📥 Carregamento de contexto (leve)
 
-Esta skill não exige carregamento pesado. Siga o protocolo em `~/.brain/ai/skills/_global/_load-project-context.md`:
+Esta skill não exige carregamento pesado. Siga o protocolo em `$BRAIN_TOOLS_PATH/ai/skills/_global/_load-project-context.md` (default: `/Users/dev/www/vakinha/brain-tools/...`):
 
 1. `get_project_context` → obtém o índice (CLAUDE.md do projeto)
 2. No índice, procure pointer pra tópico **Jira workflow** (canônico: `projects/<project>/jira-workflow.md`)
@@ -73,7 +73,7 @@ Se houver **zero matches**, mostre a lista de transições disponíveis e pergun
    [s] Salvar  [n] Skip
 ```
 
-Se aceito, siga o fluxo descrito em `_load-project-context.md` → seção "Como salvar — fluxo".
+Se aceito, siga o fluxo descrito em `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/_load-project-context.md` → seção "Como salvar — fluxo".
 
 ### 3. Confirmar antes de executar
 Sempre confirme, mesmo que pareça óbvio — mover card é ação visível externamente:

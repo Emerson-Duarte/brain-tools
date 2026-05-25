@@ -7,7 +7,9 @@ argument-hint: "[--slug=<slug>]"
 
 Responsabilidade única: **monitorar CI e responder a comentários de review** até o PR estar pronto pra merge.
 
-> **Multi-project:** observa N PRs. Status agregado por projeto. Endereçamento de feedback usa cwd=root do projeto correspondente. Veja `ai/skills/_global/sdd-multi-project.md`.
+> **Multi-project:** observa N PRs. Status agregado por projeto. Endereçamento de feedback usa cwd=root do projeto correspondente. Veja `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-multi-project.md`.
+
+> **Tools usadas:** referencie `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-tools.md` pra catálogo (built-in, MCP brain/Atlassian/github, sub-agents Explore/Plan/general-purpose, slash commands).
 
 ## 🛂 Pré-requisitos
 

@@ -7,7 +7,9 @@ argument-hint: "[--slug=<slug>]"
 
 Responsabilidade única: **transformar SDD em N issues no Jira**, agrupadas pelas camadas declaradas em `architecture.md`, com dependências vinculadas.
 
-> **Multi-project:** itera sobre `state.projects[]`. Pra cada projeto, cria issues no `project key` do `jira-workflow.md` correspondente. Linka issues cross-project via `createIssueLink` (tipo "relates to"). Atualiza `state.projects[i].jira_keys`. Veja `ai/skills/_global/sdd-multi-project.md`.
+> **Multi-project:** itera sobre `state.projects[]`. Pra cada projeto, cria issues no `project key` do `jira-workflow.md` correspondente. Linka issues cross-project via `createIssueLink` (tipo "relates to"). Atualiza `state.projects[i].jira_keys`. Veja `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-multi-project.md`.
+
+> **Tools usadas:** referencie `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-tools.md` pra catálogo (built-in, MCP brain/Atlassian/github, sub-agents Explore/Plan/general-purpose, slash commands).
 
 ## 🛂 Pré-requisitos
 
@@ -19,7 +21,7 @@ Se gate pendente → ABORT pedindo `/sdd-spec-validate`.
 
 ## 📥 Carregamento de contexto
 
-Siga `_load-project-context.md`. Carregue **tasks profile**:
+Siga `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/_load-project-context.md`. Carregue **tasks profile**:
 
 - `jira-workflow.md` (project key, issue types, labels, parent default)
 - `architecture.md` (camadas pra tag do título)
@@ -29,7 +31,7 @@ Se algum desses não existe ou está raso → **lacuna**. Pergunte ao usuário e
 
 ## ⚙️ Execução
 
-Carregue `ai/skills/_global/sdd-tasks-breakdown.md` (Read) e siga literalmente:
+Carregue `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-tasks-breakdown.md` (Read) e siga literalmente:
 
 1. Leitura do SDD (`state.spec_path`)
 2. Confirmar metadados Jira (project key, parent, tipo)

@@ -30,7 +30,7 @@ Dada uma task com contexto inicial (do passo 1), produzir:
 
 ## 📥 Carregamento de contexto
 
-Siga o protocolo em `~/.brain/ai/skills/_global/_load-project-context.md`:
+Siga o protocolo em `$BRAIN_TOOLS_PATH/ai/skills/_global/_load-project-context.md` (default: `/Users/dev/www/vakinha/brain-tools/...`):
 1. `get_project_context` → trate como índice (markdown), não objeto
 2. Identifique tópicos relevantes pro grooming e carregue via `Read`:
    - `architecture.md` (padrões, camadas, state, navigation)
@@ -113,7 +113,7 @@ Faça perguntas **numeradas, priorizadas, máximo 8 por rodada**. Use estas **ca
 **Importante**: se a categoria é claramente relevante pra task mas **o arquivo de tópico correspondente não existe ou está raso**, **a categoria inteira é uma lacuna** — ofereça preencher no feedback loop (salvar no arquivo de tópico apropriado).
 
 ### 4. Detectar lacunas e disparar feedback loop
-Ao perguntar algo estrutural ao usuário (ex.: "Que sistema de feature flag o projeto usa?"), ofereça salvar no brain conforme o protocolo em `_load-project-context.md`.
+Ao perguntar algo estrutural ao usuário (ex.: "Que sistema de feature flag o projeto usa?"), ofereça salvar no brain conforme o protocolo em `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/_load-project-context.md`.
 
 ## 🚫 Fora de escopo
 

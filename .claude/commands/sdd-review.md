@@ -7,7 +7,9 @@ argument-hint: "[--slug=<slug>] [--skip-gate=review]"
 
 Responsabilidade única: **bloquear avanço se code-review, security-review ou gates do projeto falharem**. Roda os 3 em paralelo.
 
-> **Multi-project:** itera sobre `state.projects[]`. Gate é por-projeto (`state.projects[i].gates.review`). Falha num projeto não bloqueia outros — mas bloqueia o `/sdd-pr` daquele projeto. Veja `ai/skills/_global/sdd-multi-project.md`.
+> **Multi-project:** itera sobre `state.projects[]`. Gate é por-projeto (`state.projects[i].gates.review`). Falha num projeto não bloqueia outros — mas bloqueia o `/sdd-pr` daquele projeto. Veja `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-multi-project.md`.
+
+> **Tools usadas:** referencie `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-tools.md` pra catálogo (built-in, MCP brain/Atlassian/github, sub-agents Explore/Plan/general-purpose, slash commands).
 
 ## 🛂 Pré-requisitos
 
@@ -19,7 +21,7 @@ Se diff vazio → ABORT: "Sem mudanças pra revisar. Rode /sdd-implement primeir
 
 ## 📥 Carregamento de contexto
 
-Siga `_load-project-context.md`. Carregue **review profile**:
+Siga `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/_load-project-context.md`. Carregue **review profile**:
 
 - `commands.md` (lista de gates obrigatórios — fonte da verdade)
 - `architecture.md` (padrões obrigatórios)

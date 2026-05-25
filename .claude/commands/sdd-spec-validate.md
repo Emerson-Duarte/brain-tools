@@ -7,7 +7,9 @@ argument-hint: "[--slug=<slug>] [--skip-gate=spec_validate]"
 
 Responsabilidade única: **forçar revisão humana do SDD antes de qualquer trabalho de implementação**. Sem este passo (ou skip explícito registrado), `/sdd-tasks` e `/sdd-implement` recusam executar.
 
-> **Multi-project:** gate único global. Usuário aprova/rejeita SDD inteiro (todas as seções por-projeto de uma vez). Veja `ai/skills/_global/sdd-multi-project.md`.
+> **Multi-project:** gate único global. Usuário aprova/rejeita SDD inteiro (todas as seções por-projeto de uma vez). Veja `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-multi-project.md`.
+
+> **Tools usadas:** referencie `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-tools.md` pra catálogo (built-in, MCP brain/Atlassian/github, sub-agents Explore/Plan/general-purpose, slash commands).
 
 ## 🛂 Pré-requisitos
 

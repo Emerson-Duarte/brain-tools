@@ -7,11 +7,13 @@ argument-hint: "[--slug=<slug>]"
 
 Responsabilidade única: **produzir o SDD (Spec-Driven Document)** a partir do grooming + AC. Saída é input do `/sdd-spec-validate` (gate humano) e do `/sdd-tasks`.
 
-> **Multi-project:** SDD único com **uma seção por projeto** em `state.projects[]`. Cada seção pode ser produzida pelo planner agent do projeto correspondente (sub-agents em paralelo). Inclui seção "Acoplamentos cross-project" amarrando contratos entre projetos. Veja `ai/skills/_global/sdd-multi-project.md`.
+> **Multi-project:** SDD único com **uma seção por projeto** em `state.projects[]`. Cada seção pode ser produzida pelo planner agent do projeto correspondente (sub-agents em paralelo). Inclui seção "Acoplamentos cross-project" amarrando contratos entre projetos. Veja `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-multi-project.md`.
+
+> **Tools usadas:** referencie `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-tools.md` pra catálogo (built-in, MCP brain/Atlassian/github, sub-agents Explore/Plan/general-purpose, slash commands).
 
 ## 🛂 Pré-requisitos
 
-Siga `ai/skills/_global/sdd-state.md` pra resolver `--slug`.
+Siga `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-state.md` pra resolver `--slug`.
 
 - `_state.md` existe (rode `/sdd-discover` primeiro se não).
 - `state.artifacts.grooming` aponta pra arquivo existente.
@@ -21,7 +23,7 @@ Se faltar qualquer um → ABORT com instrução de voltar ao `/sdd-discover`.
 
 ## 📥 Carregamento de contexto
 
-Siga `_load-project-context.md`. Carregue **planning profile**:
+Siga `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/_load-project-context.md`. Carregue **planning profile**:
 
 - `architecture.md`
 - `commands.md` (gates → entram na seção "Estratégia de testes")
@@ -55,7 +57,7 @@ Procure no índice do projeto (CLAUDE.md) por pointer tipo:
 
 ### 1. Carregue skill base
 
-Sempre `Read` em `ai/skills/_global/implementation-planner.md` — é a base agnóstica.
+Sempre `Read` em `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/implementation-planner.md` — é a base agnóstica.
 
 ### 2. Delegue ao sub-agent `Plan`
 

@@ -14,7 +14,7 @@ Você NÃO deve implementar código. Seu foco é: estratégia, passos, riscos, g
 
 ## Carregamento de contexto
 
-Antes de planejar, siga o protocolo em `~/.brain/ai/skills/_global/_load-project-context.md`:
+Antes de planejar, siga o protocolo em `$BRAIN_TOOLS_PATH/ai/skills/_global/_load-project-context.md` (default: `/Users/dev/www/vakinha/brain-tools/...`):
 1. `get_project_context` → trate como índice (markdown)
 2. Carregue via `Read` os tópicos relevantes pro planejamento:
    - `architecture.md` (padrões, camadas)

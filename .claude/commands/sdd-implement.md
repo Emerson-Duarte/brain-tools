@@ -7,7 +7,9 @@ argument-hint: "[--slug=<slug>] [--task=<jira-key>]"
 
 Responsabilidade única: **mover card pra "Em desenvolvimento" + executar implementação** delegando ao implementer agent project-specific se existir.
 
-> **Multi-project:** itera sobre `state.projects[]` em ordem inversa ao `merge_order` (deps primeiro — geralmente backend antes do frontend que consome). Pra cada projeto: cwd=root, branch, agent específico, commits. Atualiza `state.projects[i].{branch, artifacts.commits}`. Veja `ai/skills/_global/sdd-multi-project.md`.
+> **Multi-project:** itera sobre `state.projects[]` em ordem inversa ao `merge_order` (deps primeiro — geralmente backend antes do frontend que consome). Pra cada projeto: cwd=root, branch, agent específico, commits. Atualiza `state.projects[i].{branch, artifacts.commits}`. Veja `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-multi-project.md`.
+
+> **Tools usadas:** referencie `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-tools.md` pra catálogo (built-in, MCP brain/Atlassian/github, sub-agents Explore/Plan/general-purpose, slash commands).
 
 ## 🛂 Pré-requisitos
 
@@ -19,7 +21,7 @@ Responsabilidade única: **mover card pra "Em desenvolvimento" + executar implem
 
 ## 📥 Carregamento de contexto
 
-Siga `_load-project-context.md`. Carregue **implementation profile**:
+Siga `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/_load-project-context.md`. Carregue **implementation profile**:
 
 - `architecture.md` (padrões obrigatórios)
 - `commands.md` (gates — serão validados no `/sdd-review` mas implementação já segue)
@@ -55,7 +57,7 @@ No índice (CLAUDE.md do projeto), procure pointer tipo:
 
 Se `state.jira_main_key` ou `--task` presente:
 
-Carregue `ai/skills/_global/jira-card-move.md` (Read). Use destino `in_progress`. Para sub-tasks (se `state.jira_keys` lista mais que 1), pergunte se mover só principal ou todas.
+Carregue `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/jira-card-move.md` (Read). Use destino `in_progress`. Para sub-tasks (se `state.jira_keys` lista mais que 1), pergunte se mover só principal ou todas.
 
 Se nenhum key disponível, pule esta etapa silenciosamente.
 
@@ -93,7 +95,7 @@ Tópicos do brain carregados:
 
 Regras:
 - Commits incrementais por seção do checklist do SDD (seção 6)
-- Use a skill `commit-message.md` pra mensagens padronizadas
+- Use a skill `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/commit-message.md` pra mensagens padronizadas
 - NÃO abra PR (será passo /sdd-pr)
 - NÃO rode self-review aqui (será /sdd-review)
 - Pare ao fim do checklist OU ao primeiro bloqueador. Reporte estado.

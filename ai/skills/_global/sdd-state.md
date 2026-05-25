@@ -106,24 +106,35 @@ Projetos envolvidos: vakinha-app (primário) + vakinha-api.
 
 ## 🔍 Resolução do state em cada `/sdd-*`
 
+**Fonte de paths de projetos:** `~/.claude/CLAUDE.md` (Mapa de Projetos). Esse arquivo lista todos os projetos da família + diretório raiz comum. NÃO hardcode paths neste arquivo — sempre derive do mapa global.
+
 ```
+0. Carregue paths do mapa global:
+   Read ~/.claude/CLAUDE.md → seção "Mapa de Projetos Vakinha"
+   Parse a tabela e a linha "Todos em <dir>/<projeto>/"
+   Resultado: dict { project_name: project_root_path }
+
 1. Se --slug=<X> e --primary=<proj> passados:
-   state_path = "<projects[primary].root ou ~/www/vakinha/<proj>>/docs/sdd-<X>/_state.md"
+   state_path = "<paths[proj]>/docs/sdd-<X>/_state.md"
+   (paths[proj] vem do mapa global)
 
 2. Se --slug=<X> apenas:
    Procure state em <cwd>/docs/sdd-<X>/_state.md PRIMEIRO.
-   Se ausente, procure em todos os projetos vizinhos listados em
-   ~/.claude/CLAUDE.md (Mapa de Projetos Vakinha) ou ~/www/vakinha/*/docs/sdd-<X>/.
+   Se ausente, itere paths do mapa global:
+     for proj, root in paths.items():
+       if exists(f"{root}/docs/sdd-<X>/_state.md"): candidates.append(proj)
    - 1 encontrado → use, imprima "📌 primary=<proj>, slug=<X>"
    - 2+ encontrados → ABORTAR pedindo --primary=<proj>
 
 3. Sem --slug:
    Procure docs/sdd-*/_state.md mais recente no cwd.
-   Se cwd não tem nenhum → procure em todos os projetos da família.
+   Se cwd não tem nenhum → itere paths do mapa global procurando states ativos.
    - 0 ativos E este passo ≠ "discover" → ABORTAR
    - 1 ativo → use
    - 2+ ativos → ABORTAR pedindo --slug=<X>
 ```
+
+**Por quê via mapa global:** evita hardcode no skill (não-portável entre usuários), permite adicionar projeto novo editando só o `~/.claude/CLAUDE.md` global, e respeita a fonte única de verdade da família de projetos.
 
 ## 🛂 Validação de gates antes de executar
 
@@ -136,6 +147,50 @@ Gates **por-projeto** (`state.projects[i].gates.*`) bloqueiam só aquele projeto
 Sub-command itera sobre projects relevantes e verifica gates respectivos. Se algum projeto tem gate pending → ABORT pra esse projeto (não pra task inteira, a menos que TODOS estejam pending).
 
 **Skip explícito:** `--skip-gate=<name>` (global) ou `--skip-gate=<proj>:<name>` (por-projeto). Sempre exige aprovador, registrado no body.
+
+## 🪧 Body schema (após o `---` final)
+
+Body é log human-readable. Convenção:
+
+```markdown
+# SDD Log — <slug>
+
+Sessão iniciada em <iso>. Projetos envolvidos: <lista>.
+
+## Captura inicial
+<output do passo `/sdd-discover` cap. inicial — problema, stakeholders, escopo>
+
+## Grooming acumulado
+<síntese curta — detalhe completo em artifacts.grooming>
+
+## Decisões durante o workflow
+- <decisão 1, com timestamp>
+- <decisão 2>
+
+## Skips registrados
+- gate=<X> por <aprovador> em <timestamp> — razão: <texto>
+
+## Aprendizados pra capturar
+- <item 1>
+```
+
+Seções podem ser adicionadas conforme o workflow avança. Não é YAML — é prosa estruturada.
+
+## 🔄 Status de cada passo durante execução
+
+Estado de cada entry em `steps[]`:
+
+| status | Quando |
+|--------|--------|
+| `in_progress` | Sub-command começou mas não terminou (escreva ANTES de executar o trabalho) |
+| `completed` | Sub-command terminou com sucesso (escreva DEPOIS) |
+| `failed` | Sub-command abortou por erro/lacuna não resolvida |
+| `skipped` | Bypass via `--skip-gate=<name>` (anote `approver:` junto) |
+
+**Padrão de invocação:**
+1. Read state, append `steps: [{id: <X>, status: in_progress, timestamp: <now>}]`
+2. Faça o trabalho
+3. Edit a entry: `status: completed | failed`, atualize `last_step`, `last_run`
 
 ## ✍️ Escrita do state
 

@@ -11,11 +11,23 @@ category: meta
 
 ## 📍 Convenção de paths
 
-Todas as referências entre skills usam path absoluto `~/.brain/...` (expandido pra `$HOME/.brain/...`). Isso garante que as skills funcionem **quando o cwd é um projeto-alvo** (vakinha-app, vakinha-api, etc.) — onde `ai/skills/_global/` relativo não existe.
+Após o split em dois repos (tools/data), referências usam **path absoluto** pra resolver de qualquer cwd:
 
-O bootstrap do environment (`brain/scripts/environment-bootstrap.sh`) clona o brain em `$HOME/.brain` e symlinka os slash commands em `~/.claude/commands/`. As skills carregadas via `~/.claude/commands/sdd-workflow.md` continuam vendo o brain no path `~/.brain/`.
+- **Brain tools** (skills, behaviors, slash commands, MCP code): `$BRAIN_TOOLS_PATH/...`
+  - Default local Vakinha: `/Users/dev/www/vakinha/brain-tools/`
+- **Brain data** (knowledge, prds, projects, settings): `$BRAIN_DATA_PATH/...`
+  - Default local Vakinha: `/Users/dev/www/vakinha/brain-data/`
 
-Ao desenvolver dentro do próprio repo brain, paths como `~/.brain/...` ainda funcionam se você symlinkou o `~/.brain` pro cwd do brain (ou use o arquivo diretamente via path relativo).
+Skills referenciadas entre si usam o path absoluto completo. Exemplo:
+
+```
+Siga o protocolo em `$BRAIN_TOOLS_PATH/ai/skills/_global/_load-project-context.md`
+(default: `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/_load-project-context.md`)
+```
+
+**Por quê não path relativo (`ai/skills/_global/...`):** quando o cwd é um projeto-alvo (vakinha-app, vakinha-api, etc.) o path relativo não resolve — não há `ai/skills/_global/` lá.
+
+**Por quê não `~/.brain/...` (legado):** após o split, esse path foi descontinuado. As env vars `BRAIN_TOOLS_PATH` e `BRAIN_DATA_PATH` são definidas no MCP brain config (`~/.claude.json`) e expostas ao runtime; quando não estão disponíveis (ex.: Read direto sem env), use o path local Vakinha como fallback.
 
 ## 🎯 Princípio
 
@@ -293,7 +305,7 @@ No corpo da skill, basta:
 ```markdown
 ## Carregamento de contexto
 
-Siga o protocolo em `~/.brain/ai/skills/_global/_load-project-context.md`:
+Siga o protocolo em `$BRAIN_TOOLS_PATH/ai/skills/_global/_load-project-context.md` (default: `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/_load-project-context.md`):
 1. `get_project_context` → trate o retorno como índice (markdown), não objeto
 2. Identifique os tópicos relevantes pro passo atual
 3. Carregue via `Read` apenas os arquivos de tópico apontados pelo índice

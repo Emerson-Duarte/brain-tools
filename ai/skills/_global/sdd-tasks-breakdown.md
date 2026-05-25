@@ -28,7 +28,7 @@ Dado um SDD aprovado em `docs/plan-*.md`, produzir um conjunto de issues no Jira
 
 ## 📥 Carregamento de contexto
 
-Siga o protocolo em `~/.brain/ai/skills/_global/_load-project-context.md`:
+Siga o protocolo em `$BRAIN_TOOLS_PATH/ai/skills/_global/_load-project-context.md` (default: `/Users/dev/www/vakinha/brain-tools/...`):
 1. `get_project_context` → trate como índice (markdown)
 2. Carregue via `Read` os tópicos relevantes pra esta skill:
    - `jira-workflow.md` → project key, issue types, labels convention, parent/épico padrão
@@ -143,7 +143,7 @@ Próximo passo do workflow: mover card → "Em desenvolvimento" (passo 7)
 
 ## 🚫 Fora de escopo
 
-- **NÃO** mova cards de status — isso é o passo 7 (`jira-card-move.md`)
+- **NÃO** mova cards de status — isso é o passo 7 (`/Users/dev/www/vakinha/brain-tools/ai/skills/_global/jira-card-move.md`)
 - **NÃO** implemente nada — isso é o passo 8
 - **NÃO** crie issues sem confirmar o breakdown
 - **NÃO** assuma issue types, labels, gates — venha do `jira-workflow.md` / `commands.md` ou pergunte

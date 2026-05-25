@@ -7,7 +7,9 @@ argument-hint: "[--slug=<slug>] [--skip-gate=verify]"
 
 Responsabilidade única: **subir o app, exercitar a feature, marcar cada AC como verified ou rejected**.
 
-> **Multi-project:** AC têm campo `covered_by: [projeto1, projeto2]`. Pra cada AC, exercita os projetos listados. Multi-app pode exigir subir N processos. Gate `verify` é **global** (todos AC verified), mas roda exercícios em cada projeto. Veja `ai/skills/_global/sdd-multi-project.md`.
+> **Multi-project:** AC têm campo `covered_by: [projeto1, projeto2]`. Pra cada AC, exercita os projetos listados. Multi-app pode exigir subir N processos. Gate `verify` é **global** (todos AC verified), mas roda exercícios em cada projeto. Veja `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-multi-project.md`.
+
+> **Tools usadas:** referencie `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-tools.md` pra catálogo (built-in, MCP brain/Atlassian/github, sub-agents Explore/Plan/general-purpose, slash commands).
 
 ## 🛂 Pré-requisitos
 
@@ -17,7 +19,7 @@ Responsabilidade única: **subir o app, exercitar a feature, marcar cada AC como
 
 ## 📥 Carregamento de contexto
 
-Siga `_load-project-context.md`. Carregue:
+Siga `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/_load-project-context.md`. Carregue:
 
 - `commands.md` (como subir app)
 - `platforms.md` (se existe — UI multi-plataforma)

@@ -7,7 +7,9 @@ argument-hint: "[--slug=<slug>]"
 
 Responsabilidade única: **abrir PR conforme convenções do projeto e atualizar Jira pra "Em revisão"**.
 
-> **Multi-project:** N PRs (um por projeto em `state.projects[]`). Body de cada PR inclui cross-links pros outros + ordem de merge. Após criar todos, edita cada PR body pra completar links (depende dos números dos outros). Veja `ai/skills/_global/sdd-multi-project.md`.
+> **Multi-project:** N PRs (um por projeto em `state.projects[]`). Body de cada PR inclui cross-links pros outros + ordem de merge. Após criar todos, edita cada PR body pra completar links (depende dos números dos outros). Veja `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-multi-project.md`.
+
+> **Tools usadas:** referencie `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-tools.md` pra catálogo (built-in, MCP brain/Atlassian/github, sub-agents Explore/Plan/general-purpose, slash commands).
 
 ## 🛂 Pré-requisitos
 
@@ -21,7 +23,7 @@ Se branch não pushed → `git push -u origin <branch>` antes (perguntar primeir
 
 ## 📥 Carregamento de contexto
 
-Siga `_load-project-context.md`. Carregue **PR profile**:
+Siga `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/_load-project-context.md`. Carregue **PR profile**:
 
 - `pr-conventions.md` (template, labels, reviewers default)
 - `commands.md` (gates → checklist do PR)
@@ -33,7 +35,7 @@ Se `pr-conventions.md` não existe → **lacuna**. Pergunte ao usuário e ofere�
 
 ### 1. Carregue skill base
 
-Carregue `ai/skills/_global/pr-create-sdd.md` (Read) — define o protocolo.
+Carregue `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/pr-create-sdd.md` (Read) — define o protocolo.
 
 **Contrato rígido (NUNCA burle):**
 - Template PR vem de `pr-conventions.md` do projeto — não invente
@@ -68,7 +70,7 @@ Confirme com usuário antes de submeter.
 
 ### 4. Mover card Jira → "Em revisão"
 
-Carregue `ai/skills/_global/jira-card-move.md`. Use destino `in_review`. Adicione PR url como comentário no card via `mcp__claude_ai_Atlassian__addCommentToJiraIssue`.
+Carregue `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/jira-card-move.md`. Use destino `in_review`. Adicione PR url como comentário no card via `mcp__claude_ai_Atlassian__addCommentToJiraIssue`.
 
 ## 💾 Persistência
 

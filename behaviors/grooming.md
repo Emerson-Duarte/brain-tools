@@ -27,7 +27,7 @@ Grooming itera sobre `state.projects[]`. Cada projeto tem seu mapa de código, s
 
 ### 5. Lacunas no brain alimentam feedback loop
 
-Toda pergunta estrutural ao usuário (não sobre a task específica, mas sobre projeto) → ofereça salvar no arquivo de tópico apropriado (`commands.md`, `architecture.md`, etc. — ver mapa em `_load-project-context.md`).
+Toda pergunta estrutural ao usuário (não sobre a task específica, mas sobre projeto) → ofereça salvar no arquivo de tópico apropriado (`commands.md`, `architecture.md`, etc. — ver mapa em `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/_load-project-context.md`).
 
 ## Categorias de perguntas (use no máximo 8 por rodada)
 

@@ -34,11 +34,11 @@ Criar um PR no GitHub que:
 2. Linka pro SDD em `docs/` e pro card Jira
 3. Tem AC do SDD como checklist no body
 4. Tem plano de teste claro pro reviewer
-5. Segue convenção do brain (`commit-message.md`)
+5. Segue convenção do brain (`/Users/dev/www/vakinha/brain-tools/ai/skills/_global/commit-message.md`)
 
 ## 📥 Carregamento de contexto
 
-Siga o protocolo em `~/.brain/ai/skills/_global/_load-project-context.md`:
+Siga o protocolo em `$BRAIN_TOOLS_PATH/ai/skills/_global/_load-project-context.md` (default: `/Users/dev/www/vakinha/brain-tools/...`):
 1. `get_project_context` → trate como índice (markdown)
 2. Carregue via `Read` os tópicos relevantes pra criar PR:
    - `commands.md` → gates de qualidade (seção "Gates automáticos" do body)
@@ -85,7 +85,7 @@ git push -u origin <branch-name>
 Em falha de rede, retry com backoff exponencial (2s, 4s, 8s, 16s — máximo 4 tentativas).
 
 ### 3. Gerar título do PR
-Use a skill `commit-message.md` — formato Conventional Commits:
+Use a skill `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/commit-message.md` — formato Conventional Commits:
 
 ```
 <type>(<scope>): <descrição curta>

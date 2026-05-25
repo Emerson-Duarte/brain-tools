@@ -7,7 +7,9 @@ argument-hint: "[--slug=<slug>] [descrição inicial]"
 
 **Este comando é só um menu + encadeamento.** Toda a lógica vive nos 12 sub-commands (`/sdd-discover`, `/sdd-spec`, ..., `/sdd-capture`). Para rodar uma fase isolada, **invoque o sub-command diretamente** — não precisa passar pelo orquestrador.
 
-> **Multi-project nativo:** task pode envolver N projetos. State único (`projects[]`) é descoberto em `/sdd-discover`, e cada sub-command itera. Veja `ai/skills/_global/sdd-multi-project.md` pra regras de iteração, paralelismo, ordem de merge e cross-linking de PRs.
+> **Multi-project nativo:** task pode envolver N projetos. State único (`projects[]`) é descoberto em `/sdd-discover`, e cada sub-command itera. Veja `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-multi-project.md` pra regras de iteração, paralelismo, ordem de merge e cross-linking de PRs.
+
+> **Tools usadas:** referencie `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-tools.md` pra catálogo (built-in, MCP brain/Atlassian/github, sub-agents Explore/Plan/general-purpose, slash commands).
 
 ## 🧭 Mapa do workflow
 
@@ -48,13 +50,13 @@ FASE 4 — Pós-entrega
 
 ### Modo A — fluxo completo via menu (este comando)
 
-1. Identifica projeto e carrega contexto (siga `ai/skills/_global/_load-project-context.md`).
+1. Identifica projeto e carrega contexto (siga `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/_load-project-context.md`).
 2. Apresenta **menu por fase** via `AskUserQuestion` (`multiSelect: true`, 4 opções por pergunta).
 3. Para cada sub-command selecionado, **encadeia em ordem**:
    - Resolve dependências (ex.: sem `/sdd-spec`, recusa `/sdd-spec-validate`)
    - Para cada gate ⚠️ desmarcado, pergunta confirmação explícita
    - Executa um por vez. Entre cada, mostra checklist atualizado.
-4. Persiste estado em `<project>/docs/sdd-<slug>/_state.md` (siga `ai/skills/_global/sdd-state.md`).
+4. Persiste estado em `<project>/docs/sdd-<slug>/_state.md` (siga `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-state.md`).
 
 #### Apresentação do menu
 
@@ -137,5 +139,5 @@ Próximo sugerido: /sdd-<next>  (ou — se done)
 
 - ❌ Não implementa lógica de nenhum passo — só encadeia
 - ❌ Não substitui sub-commands isolados — eles são autossuficientes
-- ❌ Não inventa regras de projeto — tudo vem do brain via `_load-project-context.md`
+- ❌ Não inventa regras de projeto — tudo vem do brain via `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/_load-project-context.md`
 - ❌ Não pula gates ⚠️ sem confirmação explícita

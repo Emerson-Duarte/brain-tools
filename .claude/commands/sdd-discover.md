@@ -9,6 +9,8 @@ Responsabilidade única: **transformar task crua em entendimento + AC mensuráve
 
 Combina passos 1 (captura), 2 (grooming), 3 (critérios de aceite) do SDD.
 
+> **Tools usadas:** referencie `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-tools.md` pra catálogo (built-in, MCP brain/Atlassian/github, sub-agents Explore/Plan/general-purpose, slash commands).
+
 ## 🛂 Pré-requisitos
 
 - `cwd` dentro de um projeto válido (com `CLAUDE.md` ou registrado em `projects.conf`) OU `--primary=<proj>` passado.
@@ -18,7 +20,7 @@ Combina passos 1 (captura), 2 (grooming), 3 (critérios de aceite) do SDD.
 
 ## 📥 Carregamento de contexto
 
-Siga `ai/skills/_global/_load-project-context.md`.
+Siga `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/_load-project-context.md`.
 
 ### 1. Determinar projeto primário
 
@@ -68,15 +70,15 @@ Pra cada projeto em `state.projects`:
    - `glossary.md`
    - `observability.md` (se relevante)
    - `payments.md` / `notifications.md` (se aplicável)
-3. Carregue **agents project-specific** se índice declara (passo 4b do `_load-project-context.md`)
-4. `get_behavior` com `context="sdd"` + `context="grooming"`
+3. Carregue **agents project-specific** se índice declara (passo 4b do `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/_load-project-context.md`)
+4. `get_behavior` — **duas chamadas separadas**: uma com `context="sdd"`, outra com `context="grooming"`. Não junte (`get_behavior` aceita 1 string por chamada).
 5. `search_projects` + `search_knowledge` por precedentes (incluir cross-project)
 
 ## ⚙️ Execução
 
 ### 1. Resolução de slug e state
 
-Siga `ai/skills/_global/sdd-state.md`:
+Siga `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-state.md`:
 
 - Slug: pergunte se omitido (sugira a partir da descrição em kebab-case).
 - Crie `<primary>/docs/sdd-<slug>/_state.md` com schema multi-project (lista `projects[]`).
@@ -86,7 +88,10 @@ Siga `ai/skills/_global/sdd-state.md`:
 `AskUserQuestion` (1 pergunta por dimensão, limite 4 opções):
 
 - Problema/oportunidade e usuário-alvo
-- Card Jira em qual projeto? (pode ter um por projeto envolvido; passe `--task=<key>` pra primário e pergunte pros demais)
+- Card Jira em qual projeto? Padrão:
+  - Se `--task=<key>` passado → use pro projeto primário
+  - Pra cada projeto adicional → pergunte se já tem card existente, ou se cria em `/sdd-tasks` depois
+  - Se nenhum projeto tem card → ok, `state.projects[i].jira_keys = []`, gera tudo em `/sdd-tasks`
 - Stakeholders / equipes envolvidas
 - Escopo aproximado por projeto (cite **camadas descritas em `architecture.md` de cada projeto** — não invente)
 
@@ -94,7 +99,7 @@ Persiste no body do `_state.md` como seção `# Captura inicial`.
 
 ### 3. Grooming técnico (passo 2) — por projeto
 
-Carregue `ai/skills/_global/sdd-grooming.md` (Read). **Itere sobre projects[]** — pra cada projeto:
+Carregue `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-grooming.md` (Read). **Itere sobre projects[]** — pra cada projeto:
 
 - Research no brain já feito acima
 - Research no código: **delegue a sub-agent `Explore` com cwd = `projects[i].root`**. Prompt moldado pelo índice daquele projeto.
@@ -154,7 +159,7 @@ ac:
     verified: false
     covered_by: [X, Y]
 
-merge_order: [<api primeiro, depois frontend; ou perguntar usuário>]
+merge_order: [<derivado pela regra canônica em sdd-multi-project.md "Regra canônica de merge_order": lib/engine → backends → frontends>]
 
 artifacts:
   grooming: docs/sdd-<slug>/grooming.md

@@ -7,7 +7,9 @@ argument-hint: "[--slug=<slug>]"
 
 Responsabilidade única: **mergear o PR e mover card Jira pra Done**. Ação irreversível → confirmação explícita.
 
-> **Multi-project:** segue `state.merge_order` (default: backend → engine → frontends). Mergeia projeto por projeto, esperando deploy/release de deps antes (se aplicável). NUNCA mergeia frontend antes de backend que ele consome. Veja `ai/skills/_global/sdd-multi-project.md`.
+> **Multi-project:** segue `state.merge_order` (default: backend → engine → frontends). Mergeia projeto por projeto, esperando deploy/release de deps antes (se aplicável). NUNCA mergeia frontend antes de backend que ele consome. Veja `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-multi-project.md`.
+
+> **Tools usadas:** referencie `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/sdd-tools.md` pra catálogo (built-in, MCP brain/Atlassian/github, sub-agents Explore/Plan/general-purpose, slash commands).
 
 ## 🛂 Pré-requisitos
 
@@ -45,7 +47,7 @@ Estratégia vem de `pr-conventions.md`. Default sugerido: `--squash`.
 
 ### 3. Mover card Jira → Done
 
-Carregue `ai/skills/_global/jira-card-move.md`. Destino `done`. Comentário com link do commit principal de merge.
+Carregue `/Users/dev/www/vakinha/brain-tools/ai/skills/_global/jira-card-move.md`. Destino `done`. Comentário com link do commit principal de merge.
 
 ### 4. Sub-tasks (se houver)
 
