@@ -75,11 +75,14 @@ Para cada passo da skill, determine quais **tópicos** importam. Exemplos de map
 | Passo / operação | Tópicos relevantes |
 |------------------|--------------------|
 | Grooming técnico | Architecture, Glossary, Observability, Payments (se aplicável) |
+| Redação do SDD | Architecture, Commands, Observability, Rollout, Payments/Notifications |
 | Breakdown em tasks Jira | Jira workflow, Architecture (camadas), Commands (gates pro template) |
-| Self-review | Commands (gates), Architecture (padrões obrigatórios) |
+| Implementação | Architecture, Commands, Styleguide, Hooks, AI guidelines |
+| Self-review | Commands (gates), Architecture (padrões obrigatórios), AI guidelines |
+| Validação manual | Commands (como subir), Platforms, Architecture (fluxo) |
 | Criar PR | Commands (gates), PR conventions, Observability, Platforms |
 | Mover card Jira | Jira workflow |
-| Pós-deploy | Observability, Environments |
+| Pós-deploy | Observability, Environments, Rollout |
 
 Para cada tópico relevante listado no índice:
 
@@ -88,6 +91,67 @@ Read(path do tópico no índice)
 ```
 
 **Se um tópico esperado pro passo não está no índice** → lacuna (próxima seção).
+
+### 4b. Lazy load — agents project-specific
+
+Além dos arquivos `.md` de tópico, o índice pode declarar **agents project-specific** — prompts especializados pra delegação (ex.: planner-task, implementer-task, reviewer-task).
+
+Formato canônico no índice:
+
+```markdown
+## 🤖 Project Agents
+
+| Agent | Path | Use em |
+|-------|------|--------|
+| Planner | `ai/skills/<project>/agents/planner-task.agent.md` | /sdd-spec |
+| Implementer | `ai/skills/<project>/agents/implementer-task.agent.md` | /sdd-implement |
+| Reviewer | `ai/skills/<project>/agents/reviewer-task.agent.md` | /sdd-review (opcional) |
+```
+
+Variações ainda válidas:
+- Seção misturada à Knowledge Index (linha cujo path termina em `*.agent.md`)
+- Lista markdown em vez de tabela
+
+**Para qualquer sub-command que delega a sub-agent:**
+
+1. Procure no índice por pointer pro agent específico daquele passo
+2. **Se existe** → `Read` o `.agent.md` e use como prompt do sub-agent (sobrescreve genérico)
+3. **Se não existe** → lacuna obrigatória:
+   - Registre no body do `_state.md` da task (se em fluxo SDD)
+   - Pergunte ao usuário se quer criar antes de prosseguir
+   - Bypass = `[g] prosseguir com genérico` registra a decisão e segue
+
+**Skills extras do projeto** (não-agent, ex.: `new-feature.md`, `split-prs.md`) também podem ser listadas no índice. Pegue paths e mantenha em memória pra usar quando passo correspondente surgir.
+
+### 4c. Multi-project — repetir pra CADA projeto envolvido
+
+Quando rodando dentro de um `/sdd-*` cujo state tem `projects:` com mais de 1 entrada, **repita os passos 2, 4 e 4b pra cada projeto**:
+
+```
+Para cada proj em state.projects:
+  mcp__brain__get_project_context(proj.name)
+  Identificar tópicos relevantes pro passo atual
+  Read dos tópicos no índice de proj
+  Carregar agents project-specific de proj
+```
+
+Acumule contexto **rotulado por projeto** — não misture (ex.: `architecture.md` do vakinha-app ≠ `architecture.md` do vakinha-api). Sub-command opera com escopo claro:
+
+```
+Contexto carregado:
+├── vakinha-app (primário, role: mobile)
+│   ├── architecture: <...>
+│   ├── commands: <...>
+│   └── planner-agent: <...>
+└── vakinha-api (role: backend)
+    ├── architecture: <...>
+    ├── commands: <...>
+    └── planner-agent: <...>
+```
+
+Quando delegar a sub-agent num passo multi-project, **passe só o contexto do projeto que o sub-agent vai operar** (não confunda padrões de stacks diferentes no mesmo prompt).
+
+Regras adicionais de iteração (paralelismo, ordem de merge, falha parcial): `ai/skills/_global/sdd-multi-project.md`.
 
 ### 5. Cache por sessão
 
