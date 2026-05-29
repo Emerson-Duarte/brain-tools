@@ -70,6 +70,17 @@ export function readMarkdownFiles(baseDir: string, root?: string): BrainFile[] {
   return results;
 }
 
+/** Monta o haystack de busca de um arquivo: título, filename, tags e demais
+ *  valores de frontmatter (achatados) + conteúdo. Tudo em lowercase.
+ *  Tags/frontmatter entravam de fora antes — notas só achavam por corpo/título. */
+function buildHaystack(f: BrainFile): string {
+  const fmValues = Object.entries(f.frontmatter)
+    .filter(([k]) => k !== "title") // título já entra separado
+    .map(([, v]) => (Array.isArray(v) ? v.join(" ") : String(v ?? "")))
+    .join(" ");
+  return `${f.title} ${f.filename} ${fmValues} ${f.content}`.toLowerCase();
+}
+
 /** Busca híbrida: texto livre no título/conteúdo + filtros de frontmatter */
 export function hybridSearch(
   files: BrainFile[],
@@ -83,12 +94,15 @@ export function hybridSearch(
 ): BrainFile[] {
   let results = files;
 
-  // Filtro por texto livre (título + conteúdo + filename)
+  // Filtro por texto livre (título + filename + tags + frontmatter + conteúdo).
+  // OR-semantics: mantém o doc se casar QUALQUER termo; o scoreAndSort rankeia
+  // por quantos termos casaram (docs que casam todos sobem). AND era restritivo
+  // demais — query natural multi-palavra quase nunca casava todos os termos.
   if (opts.query) {
     const terms = opts.query.toLowerCase().split(/\s+/).filter(Boolean);
     results = results.filter((f) => {
-      const hay = `${f.title} ${f.filename} ${f.content}`.toLowerCase();
-      return terms.every((t) => hay.includes(t));
+      const hay = buildHaystack(f);
+      return terms.some((t) => hay.includes(t));
     });
   }
 
@@ -131,21 +145,35 @@ export function hybridSearch(
   return results;
 }
 
-/** Relevância simples: quantos termos da query aparecem no título (mais peso) vs conteúdo */
-export function scoreAndSort(files: BrainFile[], query?: string): BrainFile[] {
+/** Relevância: termos no título/filename (3) > tags+frontmatter (2) > conteúdo (1).
+ *  Com OR-filter no hybridSearch, este score é o que separa "casou tudo" de
+ *  "casou um termo solto". Docs com score 0 são descartados. */
+export function scoreAndSort(
+  files: BrainFile[],
+  query?: string,
+  limit = 25
+): BrainFile[] {
   if (!query) return files;
-  const terms = query.toLowerCase().split(/\s+/);
+  const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
 
   return files
     .map((f) => {
       const titleHay = `${f.title} ${f.filename}`.toLowerCase();
+      const tagsHay = Object.entries(f.frontmatter)
+        .filter(([k]) => k !== "title")
+        .map(([, v]) => (Array.isArray(v) ? v.join(" ") : String(v ?? "")))
+        .join(" ")
+        .toLowerCase();
       const contentHay = f.content.toLowerCase();
       const score =
         terms.reduce((acc, t) => acc + (titleHay.includes(t) ? 3 : 0), 0) +
+        terms.reduce((acc, t) => acc + (tagsHay.includes(t) ? 2 : 0), 0) +
         terms.reduce((acc, t) => acc + (contentHay.includes(t) ? 1 : 0), 0);
       return { file: f, score };
     })
+    .filter((x) => x.score > 0)
     .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
     .map((x) => x.file);
 }
 
