@@ -7,31 +7,31 @@ category: delivery
 
 Atue como um **Especialista em Documentação Técnica e Assistente de Pull Request**.
 
-Sua missão é gerar mensagens de PR impecáveis seguindo um padrão rígido. Você **não deve inventar** funcionalidades, bugs ou contextos que o usuário não mencionar. Se uma informação estiver faltando, **peça** em vez de assumir.
+Sua missão é gerar mensagens de PR impecáveis seguindo um padrão rígido. Você **não deve inventar** funcionalidades, bugs ou contextos. Toda a informação vem da branch, do card Jira e dos commits — **não pergunte nada ao usuário**.
 
 > Skill de PR **genérica** (não-SDD). Use quando o usuário pedir um PR fora do fluxo `/sdd-workflow`. Para PR dentro do SDD, use `pr-create-sdd.md`.
 
 ## 🛡️ Regras de ouro (anti-delírio)
 
-- **Fidelidade aos dados:** use apenas as informações fornecidas. Não adicione "melhorias de performance" ou "refatoração" se não foi citado explicitamente.
-- **Processo passo a passo:** não pule etapas. Ordem: coleta do número → resumo da task → mensagem(ns) de commit → geração final.
-- **Formatação estrita:** o output final deve seguir rigorosamente o template Markdown abaixo.
+- **Fidelidade aos dados:** use apenas o que vem do card Jira e dos commits. Não adicione "melhorias de performance" ou "refatoração" que não esteja nos commits/card.
+- **Sem perguntas:** derive tudo automaticamente (ver abaixo). Só pare e reporte se uma fonte obrigatória faltar (ex.: branch sem número de task).
+- **Formatação estrita:** o output final segue rigorosamente o template Markdown abaixo.
 
-## 📋 Fluxo de interação
+## 📋 Coleta automática (não perguntar)
 
-1. **Pergunte o número da task** (ex.: `2100`). Se a branch atual já segue `task/VK25-XXXX/...`, proponha o número extraído e peça confirmação em vez de perguntar do zero.
-2. **Peça o resumo da task** — o "porquê" da mudança.
-3. **Peça a(s) mensagem(ns) de commit** — o "o quê" e o "como". Se já houver commits na branch, ofereça usar `git log {base}..HEAD` como base e peça confirmação.
-
-Não gere o PR antes de ter os três.
+1. **Número da task:** extraia da branch `task/VK25-XXXX/...` → `VK25-XXXX`. Se a branch não tiver o padrão, pare e reporte.
+2. **Contexto/resumo:** busque o card no Jira (`getJiraIssue`) — use título e descrição como o "porquê".
+3. **Commits:** `git log {base}..HEAD` (base = branch default do projeto, do `jira-workflow.md`) → base do "como foi feito".
 
 ## 🏗️ Estrutura do output final
 
-Título:
+Título (**em pt-BR**):
 
 ```
 [VK25-NUMERO] Título Conciso
 ```
+
+Use português no título (ex.: "Pesquisas", não "Surveys"). Termos técnicos consagrados (endpoints, models, specs, UI, migrations) podem ficar como são.
 
 Corpo:
 
@@ -50,8 +50,10 @@ Corpo:
 
 ## ⚙️ Operacional
 
-- **Confirme o corpo com o usuário** antes de criar o PR (nunca em modo silencioso).
-- Crie via `gh pr create` (ou GitHub MCP) com `base` = branch default do projeto (`develop`/`master`/`main` conforme `jira-workflow.md`).
+- Crie via `gh pr create` (ou GitHub MCP) com `base` = branch default do projeto (`develop`/`master`/`main` conforme `jira-workflow.md`). Sem confirmação prévia — o usuário já autorizou ao pedir o PR.
+- **Sempre passe `--repo owner/nome`** em `gh pr create`/`gh pr edit` (ou `cd` explícito no diretório certo antes de cada comando). O `cwd` persiste entre comandos — `gh pr edit <n>` sem `--repo` pode editar o PR `#<n>` do repo errado. Número de PR é por repo; nunca reutilize cwd de outro repo.
+- **Reviewers (sempre marcar os 5):** `marcelogborges`, `davidsgoncalves`, `zekisan`, `VictorMiwa29`, `FabricioBernardes`. Em `gh`: `--reviewer marcelogborges,davidsgoncalves,zekisan,VictorMiwa29,FabricioBernardes`.
+- **Mover o card pra Code Review:** após criar o PR, transicione o card Jira para **Code Review** (`getTransitionsForJiraIssue` → `transitionJiraIssue`). Opcional: comentar no card com o link do PR.
 - **Nunca** atribua autoria ao Claude no corpo nem como co-author (`noreply@anthropic.com`). Identidade real do dev.
 - Cross-repo: um PR por repo, vinculando-os entre si na descrição; o card Jira recebe todos os links.
 - Não faça merge — fora do escopo.
