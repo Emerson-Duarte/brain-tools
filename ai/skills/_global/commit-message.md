@@ -52,8 +52,9 @@ Use o formato Conventional Commits:
 - `perf` — melhoria de performance
 
 ### Regras
-1. Primeira linha: máximo 72 caracteres, imperativo presente ("add" não "added")
-2. Deixe uma linha em branco entre o título e o corpo
+1. **Idioma: inglês** — título E corpo, em todos os projetos Vakinha. Mesmo quando a mudança descreve algo em pt-BR (ex.: traduzir mensagens de erro), a mensagem de commit é em inglês.
+2. Primeira linha: máximo 72 caracteres, imperativo presente ("add" não "added")
+3. Deixe uma linha em branco entre o título e o corpo
 3. O corpo explica **o quê e por quê**, não o como
 4. Referencie issues quando relevante: `Closes #123`
 
