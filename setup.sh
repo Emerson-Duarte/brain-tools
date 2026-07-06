@@ -226,6 +226,38 @@ configure_global_commands() {
   done
 }
 
+# ── Symlinks de skills globais de usuário (dirs com SKILL.md + scripts) ──────
+# Skills agnósticas com scripts embutidos vivem em ai/skills/_global/<nome>/
+# e são linkadas em ~/.claude/skills/<nome> (disponíveis em qualquer projeto).
+configure_global_skills() {
+  local SKILLS_SRC="$TOOLS_DIR/ai/skills/_global"
+  local SKILLS_DST="$HOME/.claude/skills"
+
+  mkdir -p "$SKILLS_DST"
+
+  for skill_dir in "$SKILLS_SRC"/*/; do
+    [[ -f "$skill_dir/SKILL.md" ]] || continue
+    local skillname target
+    skillname="$(basename "$skill_dir")"
+    target="$SKILLS_DST/$skillname"
+
+    chmod +x "$skill_dir"scripts/* 2>/dev/null || true
+
+    if [[ -L "$target" && "$(readlink "$target")" == "${skill_dir%/}" ]]; then
+      warn "Skill global já linkada: $skillname — pulando"
+      continue
+    fi
+
+    if [[ -e "$target" && ! -L "$target" ]]; then
+      warn "Skill $skillname já existe em $target (não é symlink) — resolva manualmente"
+      continue
+    fi
+
+    ln -sfn "${skill_dir%/}" "$target"
+    info "Skill global: $skillname → brain-tools"
+  done
+}
+
 # ── Symlinks por projeto (CLAUDE.md, AGENTS.md, skills) ──────────────────────
 # Tudo aqui vem do repo de dados (privado).
 configure_projects() {
@@ -319,6 +351,9 @@ configure_global_claude_md
 
 info "Configurando slash commands globais..."
 configure_global_commands
+
+info "Configurando skills globais..."
+configure_global_skills
 
 info "Configurando projetos (CLAUDE.md + AGENTS.md + skills)..."
 configure_projects
