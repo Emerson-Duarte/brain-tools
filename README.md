@@ -8,11 +8,11 @@ Servidor MCP + skills/behaviors/prompts agnósticos para Claude Code (e Codex). 
 
 ```
 .claude/commands/        ← slash commands globais: /sdd-workflow, /brain-capture
-ai/skills/_global/       ← skills agnósticas (SDD, PR, commit, planner, etc.)
+ai/skills/_global/       ← skills agnósticas (SDD, PR, commit, planner, adapter Codex, etc.)
 ai/prompts/              ← prompts agnósticos (vazio até você adicionar)
 behaviors/               ← code-review, prd-writing, brain-capture
 mcp/                     ← servidor MCP (TypeScript)
-scripts/                 ← environment-bootstrap.sh (claude.ai/code)
+scripts/                 ← bootstraps locais/remotos
 docs/                    ← guias
 prds/templates/          ← template genérico de PRD
 setup.sh                 ← bootstrap local (Mac/Linux)
@@ -28,6 +28,8 @@ bash ~/brain-tools/setup.sh \
 ```
 
 O script clona ambos os repos, builda o MCP, registra em `~/.claude.json` e cria symlinks (`~/.claude/CLAUDE.md`, `~/.claude/commands/`).
+Para Codex, o mesmo setup registra o MCP em `~/.codex/config.toml`, gera `~/.codex/AGENTS.md`
+a partir do `brain-data/ai/settings/CLAUDE.md` e linka skills globais compatíveis em `~/.codex/skills/`.
 
 ## Setup rápido — Claude Code web (claude.ai/code)
 

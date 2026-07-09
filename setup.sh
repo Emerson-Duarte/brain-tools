@@ -158,6 +158,7 @@ configure_codex() {
     warn "~/.codex não encontrado — Codex não está instalado, pulando"
     return
   fi
+  [[ -f "$CODEX_CONFIG" ]] || touch "$CODEX_CONFIG"
 
   if [[ -f "$CODEX_CONFIG" ]] && grep -q '\[mcp_servers\.brain\]' "$CODEX_CONFIG"; then
     warn "brain já está em ~/.codex/config.toml — pulando"
@@ -176,6 +177,78 @@ BRAIN_DATA_PATH  = "$DATA_DIR"
 TOML
 
   info "~/.codex/config.toml atualizado com o brain MCP"
+}
+
+# ── Configura Codex global instructions (~/.codex/AGENTS.md) ────────────────
+# Codex consome AGENTS.md. O conteúdo canônico do brain continua em CLAUDE.md
+# para compatibilidade histórica; aqui geramos um entrypoint com adapter.
+configure_codex_agents() {
+  local SOURCE="$DATA_DIR/ai/settings/CLAUDE.md"
+  local TARGET="$HOME/.codex/AGENTS.md"
+  local PROJECTS_CONF="$DATA_DIR/projects/projects.conf"
+
+  if [[ ! -d "$HOME/.codex" ]]; then
+    warn "~/.codex não encontrado — AGENTS.md global do Codex pulado"
+    return
+  fi
+
+  [[ ! -f "$SOURCE" ]] && { warn "CLAUDE.md global não encontrado em $SOURCE — AGENTS.md do Codex pulado"; return; }
+
+  [[ -f "$TARGET" && ! -L "$TARGET" ]] && cp "$TARGET" "$TARGET.bak" && warn "Backup: $TARGET.bak"
+  [[ -L "$TARGET" ]] && rm "$TARGET"
+
+  python3 - "$SOURCE" "$TARGET" "$TOOLS_DIR" "$DATA_DIR" "$PROJECTS_CONF" <<'PYEOF'
+from pathlib import Path
+import sys
+
+source, target, tools_dir, data_dir, projects_conf = map(Path, sys.argv[1:])
+content = source.read_text()
+
+content = content.replace("/Users/dev/www/vakinha/brain-tools", str(tools_dir))
+content = content.replace("/Users/dev/www/vakinha/brain-data", str(data_dir))
+content = content.replace("/Users/dev/www/vakinha/brain", str(data_dir))
+content = content.replace(
+    "Todos em `/Users/dev/www/vakinha/<projeto>/`",
+    f"Caminhos locais desta máquina: consulte `{projects_conf}`."
+)
+content = content.replace(
+    "`user.name == Claude`",
+    "`user.name == Claude` ou `user.name == Codex`"
+)
+
+projects = ""
+if projects_conf.exists():
+    rows = []
+    for line in projects_conf.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        name, path = line.split("=", 1)
+        rows.append(f"- `{name}` → `{path}`")
+    if rows:
+        projects = "\n## Caminhos Locais\n\n" + "\n".join(rows) + "\n"
+
+adapter = f"""# AGENTS.md — brain para Codex
+
+> Gerado por `brain-tools/setup.sh` a partir de `{source}`.
+> O conteúdo canônico continua no brain-data; rode o setup novamente após alterações relevantes.
+
+## Compatibilidade Codex
+
+Este brain foi criado originalmente para Claude Code. No Codex:
+
+- Quando o usuário invocar `/sdd-workflow`, `/review-task`, `/review-pr`, `/brain-capture` ou outro comando do brain, leia o arquivo correspondente em `{tools_dir}/.claude/commands/` e execute as instruções.
+- Antes de seguir qualquer comando/skill escrito para Claude, carregue e aplique `{tools_dir}/ai/skills/_global/codex-adapter/SKILL.md`.
+- `CLAUDE.md` é o nome histórico do índice canônico; `AGENTS.md` é o entrypoint do Codex.
+- Se aparecer `/Users/dev/www/vakinha/...`, trate como path legado e resolva via `{data_dir}/projects/projects.conf` ou pelos paths configurados abaixo.
+- Mapeie ferramentas do Claude para Codex: `Read`→leitura por shell/MCP, `Write/Edit`→`apply_patch`, `Bash`→`exec_command`, `AskUserQuestion`→pergunta concisa, `TodoWrite`→`update_plan`, `Agent`→multi-agent disponível ou execução direta.
+- Contratos de git valem para qualquer agente: nunca commit/PR com identidade `Claude`, `Codex`, vazia ou `noreply@anthropic.com`.
+"""
+
+target.write_text(adapter + projects + "\n---\n\n" + content)
+PYEOF
+
+  info "~/.codex/AGENTS.md gerado a partir do brain-data"
 }
 
 # ── Symlink CLAUDE.md global (vem do repo de dados) ───────────────────────────
@@ -258,6 +331,37 @@ configure_global_skills() {
   done
 }
 
+# ── Symlinks de skills globais para Codex (~/.codex/skills/) ────────────────
+configure_codex_global_skills() {
+  local SKILLS_SRC="$TOOLS_DIR/ai/skills/_global"
+  local SKILLS_DST="$HOME/.codex/skills"
+
+  if [[ ! -d "$HOME/.codex" ]]; then
+    warn "~/.codex não encontrado — skills globais do Codex puladas"
+    return
+  fi
+
+  mkdir -p "$SKILLS_DST"
+
+  for skill_dir in "$SKILLS_SRC"/*/; do
+    [[ -f "$skill_dir/SKILL.md" ]] || continue
+    local skillname target
+    skillname="$(basename "$skill_dir")"
+    target="$SKILLS_DST/brain-$skillname"
+
+    chmod +x "$skill_dir"scripts/* 2>/dev/null || true
+
+    if [[ -L "$target" && "$(readlink "$target")" == "${skill_dir%/}" ]]; then
+      warn "Skill Codex já linkada: brain-$skillname — pulando"
+      continue
+    fi
+
+    [[ -e "$target" && ! -L "$target" ]] && { warn "Skill Codex brain-$skillname já existe em $target (não é symlink) — resolva manualmente"; continue; }
+    ln -sfn "${skill_dir%/}" "$target"
+    info "Skill Codex: brain-$skillname → brain-tools"
+  done
+}
+
 # ── Symlinks por projeto (CLAUDE.md, AGENTS.md, skills) ──────────────────────
 # Tudo aqui vem do repo de dados (privado).
 configure_projects() {
@@ -297,6 +401,14 @@ configure_projects() {
         info "Symlink: $project/AGENTS.md → brain-data"
       else
         warn "$project/AGENTS.md já linkado — pulando"
+      fi
+    elif [[ -f "$brain_claude" ]]; then
+      if [[ ! ( -L "$target_agents" && "$(readlink "$target_agents")" == "$brain_claude" ) ]]; then
+        [[ -f "$target_agents" && ! -L "$target_agents" ]] && cp "$target_agents" "$target_agents.bak"
+        ln -sf "$brain_claude" "$target_agents"
+        info "Symlink: $project/AGENTS.md → brain-data/CLAUDE.md (fallback Codex)"
+      else
+        warn "$project/AGENTS.md já linkado ao CLAUDE.md — pulando"
       fi
     fi
 
@@ -346,6 +458,9 @@ configure_claude_code
 info "Configurando Codex..."
 configure_codex
 
+info "Configurando AGENTS.md global do Codex..."
+configure_codex_agents
+
 info "Configurando CLAUDE.md global..."
 configure_global_claude_md
 
@@ -354,6 +469,9 @@ configure_global_commands
 
 info "Configurando skills globais..."
 configure_global_skills
+
+info "Configurando skills globais do Codex..."
+configure_codex_global_skills
 
 info "Configurando projetos (CLAUDE.md + AGENTS.md + skills)..."
 configure_projects
@@ -374,9 +492,11 @@ echo ""
 echo "  Configurado:"
 echo "  ✓ Claude Code MCP (~/.claude.json)"
 echo "  ✓ Codex MCP (~/.codex/config.toml)"
+echo "  ✓ ~/.codex/AGENTS.md (entrypoint global do Codex)"
+echo "  ✓ ~/.codex/skills/brain-* (skills globais compatíveis)"
 echo "  ✓ ~/.claude/CLAUDE.md (global, do data)"
 echo "  ✓ ~/.claude/commands/ (slash commands globais, do tools)"
-echo "  ✓ CLAUDE.md + AGENTS.md + skills por projeto (do data)"
+echo "  ✓ CLAUDE.md + AGENTS.md/fallback + skills por projeto (do data)"
 echo "  ✓ Alias brain-sync (atualiza ambos os repos)"
 echo ""
 echo "  Próximos passos:"
