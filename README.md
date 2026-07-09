@@ -1,6 +1,6 @@
 # brain-tools
 
-Servidor MCP + skills/behaviors/prompts agnósticos para Claude Code (e Codex). Pode ser usado por qualquer pessoa — todo o conteúdo daqui é **independente de domínio**.
+Servidor MCP + skills/behaviors/prompts agnósticos para Claude Code, Codex e **GitHub Copilot CLI**. Pode ser usado por qualquer pessoa — todo o conteúdo daqui é **independente de domínio**.
 
 > 🧩 Este é o repo **público de tools**. Seu conhecimento privado (projetos, PRDs, notas) vive num repo separado de dados (`brain-data`), que pode permanecer privado. O MCP server lê ambos via `BRAIN_TOOLS_PATH` e `BRAIN_DATA_PATH`.
 
@@ -8,7 +8,7 @@ Servidor MCP + skills/behaviors/prompts agnósticos para Claude Code (e Codex). 
 
 ```
 .claude/commands/        ← slash commands globais: /sdd-workflow, /brain-capture
-ai/skills/_global/       ← skills agnósticas (SDD, PR, commit, planner, adapter Codex, etc.)
+ai/skills/_global/       ← skills agnósticas (SDD, PR, commit, planner, adapters, etc.)
 ai/prompts/              ← prompts agnósticos (vazio até você adicionar)
 behaviors/               ← code-review, prd-writing, brain-capture
 mcp/                     ← servidor MCP (TypeScript)
@@ -27,9 +27,13 @@ bash ~/brain-tools/setup.sh \
   --data-repo git@github.com:SEU_USUARIO/brain-data.git
 ```
 
-O script clona ambos os repos, builda o MCP, registra em `~/.claude.json` e cria symlinks (`~/.claude/CLAUDE.md`, `~/.claude/commands/`).
-Para Codex, o mesmo setup registra o MCP em `~/.codex/config.toml`, gera `~/.codex/AGENTS.md`
-a partir do `brain-data/ai/settings/CLAUDE.md` e linka skills globais compatíveis em `~/.codex/skills/`.
+O script configura os três clientes automaticamente:
+
+| Cliente | Config gerada |
+|---------|---------------|
+| Claude Code | `~/.claude.json` (MCP) · `~/.claude/CLAUDE.md` · `~/.claude/commands/` |
+| Codex | `~/.codex/config.toml` (MCP) · `~/.codex/AGENTS.md` · `~/.codex/skills/brain-*` |
+| Copilot CLI | `~/.copilot/mcp-config.json` (MCP) · `~/.agents/skills/brain-*` |
 
 ## Setup rápido — Claude Code web (claude.ai/code)
 
@@ -43,6 +47,31 @@ bash /tmp/brain-bootstrap.sh
 ```
 
 Detalhes em [`docs/environment-setup.md`](docs/environment-setup.md).
+
+## Compatibilidade de clientes
+
+| Recurso | Claude Code | Codex | Copilot CLI |
+|---------|:-----------:|:-----:|:-----------:|
+| MCP brain | ✅ | ✅ | ✅ |
+| Skills globais | ✅ `~/.claude/skills/` | ✅ `~/.codex/skills/` | ✅ `~/.agents/skills/` |
+| Slash commands | ✅ nativo | via adapter | via skill wrappers |
+| Instruções globais | `CLAUDE.md` | `AGENTS.md` (gerado) | custom_instruction (manual) |
+| Adapter | — | `codex-adapter` skill | `copilot-adapter` skill |
+
+### Skills disponíveis (Copilot CLI)
+
+Após o setup, as skills aparecem em `~/.agents/skills/brain-*` e ficam disponíveis no Copilot CLI:
+
+| Skill | Descrição |
+|-------|-----------|
+| `brain-copilot-adapter` | Camada de tradução Claude Code → Copilot CLI |
+| `brain-review-pr` | Revisão profunda de PR por URL |
+| `brain-review-task` | Revisão multi-repo por task ID do Jira |
+| `brain-capture` | Captura aprendizados da sessão no brain |
+| `brain-sdd-workflow` | Orquestrador SDD completo |
+| `brain-handoff` | Worklog de handoff entre máquinas |
+| `brain-commit-message` | Mensagem de commit seguindo convenções do brain |
+| `brain-pr-create` | Abertura de PR seguindo convenções do brain |
 
 ## Tools do MCP
 

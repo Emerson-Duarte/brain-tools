@@ -331,6 +331,64 @@ configure_global_skills() {
   done
 }
 
+# ── Configura Copilot CLI (~/.copilot/mcp-config.json) ───────────────────────
+configure_copilot_cli() {
+  if ! command -v copilot &>/dev/null; then
+    warn "copilot CLI não encontrado — pulando"
+    return
+  fi
+
+  local MCP_CFG="$HOME/.copilot/mcp-config.json"
+
+  if [[ -f "$MCP_CFG" ]] && python3 -c "import json,sys; d=json.load(open('$MCP_CFG')); sys.exit(0 if 'brain' in d.get('mcpServers',{}) else 1)" 2>/dev/null; then
+    warn "brain já está em ~/.copilot/mcp-config.json — pulando"
+    return
+  fi
+
+  local NODE_BIN
+  NODE_BIN="$(command -v node)"
+
+  # copilot mcp add escreve em ~/.copilot/mcp-config.json
+  # --env deve vir antes do -- (separador de comando)
+  copilot mcp add brain \
+    --env "BRAIN_TOOLS_PATH=$TOOLS_DIR" \
+    --env "BRAIN_DATA_PATH=$DATA_DIR" \
+    -- "$NODE_BIN" "$MCP_DIR/dist/index.js" 2>/dev/null \
+    && info "Copilot CLI MCP configurado (~/.copilot/mcp-config.json)" \
+    || warn "Falha ao configurar MCP do Copilot CLI via 'copilot mcp add' — configure manualmente"
+}
+
+# ── Symlinks de skills globais para Copilot CLI (~/.agents/skills/) ──────────
+configure_copilot_global_skills() {
+  if ! command -v copilot &>/dev/null; then
+    warn "copilot CLI não encontrado — skills puladas"
+    return
+  fi
+
+  local SKILLS_SRC="$TOOLS_DIR/ai/skills/_global"
+  local SKILLS_DST="$HOME/.agents/skills"
+
+  mkdir -p "$SKILLS_DST"
+
+  for skill_dir in "$SKILLS_SRC"/*/; do
+    [[ -f "$skill_dir/SKILL.md" ]] || continue
+    local skillname target
+    skillname="$(basename "$skill_dir")"
+    target="$SKILLS_DST/brain-$skillname"
+
+    chmod +x "$skill_dir"scripts/* 2>/dev/null || true
+
+    if [[ -L "$target" && "$(readlink "$target")" == "${skill_dir%/}" ]]; then
+      warn "Skill Copilot já linkada: brain-$skillname — pulando"
+      continue
+    fi
+
+    [[ -e "$target" && ! -L "$target" ]] && { warn "Skill Copilot brain-$skillname já existe em $target (não é symlink) — resolva manualmente"; continue; }
+    ln -sfn "${skill_dir%/}" "$target"
+    info "Skill Copilot CLI: brain-$skillname → brain-tools"
+  done
+}
+
 # ── Symlinks de skills globais para Codex (~/.codex/skills/) ────────────────
 configure_codex_global_skills() {
   local SKILLS_SRC="$TOOLS_DIR/ai/skills/_global"
@@ -461,6 +519,9 @@ configure_codex
 info "Configurando AGENTS.md global do Codex..."
 configure_codex_agents
 
+info "Configurando Copilot CLI..."
+configure_copilot_cli
+
 info "Configurando CLAUDE.md global..."
 configure_global_claude_md
 
@@ -472,6 +533,9 @@ configure_global_skills
 
 info "Configurando skills globais do Codex..."
 configure_codex_global_skills
+
+info "Configurando skills globais do Copilot CLI..."
+configure_copilot_global_skills
 
 info "Configurando projetos (CLAUDE.md + AGENTS.md + skills)..."
 configure_projects
@@ -494,6 +558,8 @@ echo "  ✓ Claude Code MCP (~/.claude.json)"
 echo "  ✓ Codex MCP (~/.codex/config.toml)"
 echo "  ✓ ~/.codex/AGENTS.md (entrypoint global do Codex)"
 echo "  ✓ ~/.codex/skills/brain-* (skills globais compatíveis)"
+echo "  ✓ Copilot CLI MCP (~/.copilot/mcp-config.json)"
+echo "  ✓ ~/.agents/skills/brain-* (skills globais Copilot CLI)"
 echo "  ✓ ~/.claude/CLAUDE.md (global, do data)"
 echo "  ✓ ~/.claude/commands/ (slash commands globais, do tools)"
 echo "  ✓ CLAUDE.md + AGENTS.md/fallback + skills por projeto (do data)"
@@ -501,6 +567,6 @@ echo "  ✓ Alias brain-sync (atualiza ambos os repos)"
 echo ""
 echo "  Próximos passos:"
 echo "  1. source ~/.zshrc"
-echo "  2. Reinicie Claude Code e Codex"
+echo "  2. Reinicie Claude Code, Codex e Copilot CLI"
 echo "  3. Teste: 'qual o contexto do projeto X?'"
 echo ""
