@@ -187,6 +187,57 @@ else
   warn "$COMMANDS_SRC_DIR não encontrado — pulando slash commands"
 fi
 
+# ── Symlink de skills locais que exigem path fixo em ~/.claude/skills ─────────
+# Ex.: worktree — a SKILL.md referencia ~/.claude/skills/worktree/scripts/worktree.sh.
+SKILLS_DST_DIR="$HOME/.claude/skills"
+mkdir -p "$SKILLS_DST_DIR"
+for skill in worktree; do
+  skill_src="$TOOLS_DIR/ai/skills/_global/$skill"
+  skill_dst="$SKILLS_DST_DIR/$skill"
+  [[ -d "$skill_src" ]] || continue
+  if [[ -L "$skill_dst" && "$(readlink "$skill_dst")" == "$skill_src" ]]; then
+    continue
+  fi
+  if [[ -e "$skill_dst" && ! -L "$skill_dst" ]]; then
+    warn "~/.claude/skills/$skill existe e não é symlink — pulando"
+    continue
+  fi
+  ln -sfn "$skill_src" "$skill_dst"
+  info "Skill local: ~/.claude/skills/$skill → brain-tools"
+done
+
+# ── Symlinks CLAUDE.md/AGENTS.md por projeto (vêm do brain-data/projects) ─────
+# Mapeamento projeto→path local em brain-data/projects/projects.conf (por-máquina,
+# não versionado). Cada máquina tem o seu — por isso estes symlinks são recriados
+# no bootstrap em vez de commitados.
+PROJECTS_CONF="$DATA_DIR/projects/projects.conf"
+if [[ -f "$PROJECTS_CONF" ]]; then
+  while IFS='=' read -r _proj _ppath; do
+    _proj="${_proj:-}"; _ppath="${_ppath:-}"
+    # trim whitespace (pure bash, sem depender de xargs)
+    _proj="${_proj#"${_proj%%[![:space:]]*}"}"; _proj="${_proj%"${_proj##*[![:space:]]}"}"
+    _ppath="${_ppath#"${_ppath%%[![:space:]]*}"}"; _ppath="${_ppath%"${_ppath##*[![:space:]]}"}"
+    [[ -z "$_proj" || "$_proj" == \#* ]] && continue
+    [[ -d "$_ppath" ]] || { warn "projeto $_proj: $_ppath não existe — pulando"; continue; }
+    for pf in CLAUDE.md AGENTS.md; do
+      pf_src="$DATA_DIR/projects/$_proj/$pf"
+      pf_dst="$_ppath/$pf"
+      [[ -f "$pf_src" ]] || continue
+      if [[ -L "$pf_dst" && "$(readlink "$pf_dst")" == "$pf_src" ]]; then
+        continue
+      fi
+      if [[ -e "$pf_dst" && ! -L "$pf_dst" ]]; then
+        warn "$pf_dst existe e não é symlink — pulando"
+        continue
+      fi
+      ln -sf "$pf_src" "$pf_dst"
+      info "Projeto $_proj: $pf → brain-data/projects/$_proj/$pf"
+    done
+  done < "$PROJECTS_CONF"
+else
+  warn "projects.conf não encontrado ($PROJECTS_CONF) — pulando symlinks de projeto (copie projects.conf.example e ajuste os paths)"
+fi
+
 # ── Git config global ─────────────────────────────────────────────────────────
 current_email="$(git config --global user.email || echo '')"
 current_name="$(git config --global user.name || echo '')"
@@ -219,6 +270,8 @@ echo "  Configurado nesta sessão:"
 echo "  ✓ Brain MCP registrado em ~/.claude.json (2 paths)"
 echo "  ✓ ~/.claude/CLAUDE.md (global, do repo de dados)"
 echo "  ✓ ~/.claude/commands/ (slash commands globais, do repo público)"
+echo "  ✓ ~/.claude/skills/worktree (skill worktree, do repo público)"
+echo "  ✓ CLAUDE.md/AGENTS.md por projeto (do brain-data, via projects.conf)"
 echo "  ✓ Git identity global: $GIT_NAME <$GIT_EMAIL>"
 echo ""
 echo "  Slash commands disponíveis:"
