@@ -98,7 +98,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     {
       name: "search_knowledge",
       description:
-        "Busca na base de conhecimento do brain: boas práticas de engenharia, arquitetura, notas pessoais, referências e recursos curados. Chame quando precisar de contexto técnico ou referências anteriores.",
+        "Busca na base de conhecimento do brain: boas práticas de engenharia, arquitetura, notas pessoais, referências e recursos curados. Chame quando precisar de contexto técnico ou referências anteriores. Retorna PONTEIROS (título + caminho + resumo) por padrão — abra a nota com Read no caminho, ou passe verbose=true p/ conteúdo inline.",
       inputSchema: {
         type: "object",
         properties: {
@@ -110,6 +110,10 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
             description: "Categoria do conhecimento",
           },
           project: { type: "string", description: "Filtrar por projeto associado" },
+          verbose: {
+            type: "boolean",
+            description: "true = conteúdo inline (600 chars/nota); default false = ponteiros econômicos.",
+          },
         },
       },
     },

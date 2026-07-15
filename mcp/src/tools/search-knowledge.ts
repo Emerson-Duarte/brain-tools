@@ -5,6 +5,7 @@ import {
   hybridSearch,
   scoreAndSort,
   formatFileList,
+  formatPointerList,
 } from "../brain.js";
 
 interface SearchKnowledgeArgs {
@@ -12,6 +13,7 @@ interface SearchKnowledgeArgs {
   tags?: string[];
   category?: "engineering" | "architecture" | "references" | "notes" | "resources" | "all";
   project?: string;
+  verbose?: boolean; // true = conteúdo inline (600 chars); default = ponteiros (econômico)
 }
 
 const CATEGORY_DIRS: Record<string, string> = {
@@ -23,7 +25,7 @@ const CATEGORY_DIRS: Record<string, string> = {
 };
 
 export async function searchKnowledge(args: SearchKnowledgeArgs) {
-  const { query, tags, category = "all", project } = args;
+  const { query, tags, category = "all", project, verbose = false } = args;
 
   const dirs =
     category === "all"
@@ -48,7 +50,10 @@ export async function searchKnowledge(args: SearchKnowledgeArgs) {
   }
 
   const header = `Encontrei ${count} item(s) na base de conhecimento:\n\n`;
+  const body = verbose
+    ? formatFileList(files, { showContent: true })
+    : formatPointerList(files);
   return {
-    content: [{ type: "text", text: header + formatFileList(files, { showContent: true }) }],
+    content: [{ type: "text", text: header + body }],
   };
 }

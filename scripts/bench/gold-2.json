@@ -1,0 +1,85 @@
+[
+  {
+    "query": "OpenObserveLogger ao invés de Sentry pra evento de domínio",
+    "type": "exact",
+    "gold": ["knowledge/engineering/2026-05-27-observabilidade-vakinha-usar-openobservelogger-nao-sentry-pr.md"],
+    "note": "Termos técnicos exatos da nota (OpenObserveLogger, Sentry, evento de domínio)."
+  },
+  {
+    "query": "eas profile internal-testing gera apk e o billing quebra",
+    "type": "exact",
+    "gold": ["knowledge/engineering/2026-05-21-eas-profile-correto-pra-play-console-internal-testing-nao-co.md"],
+    "note": "Usa os mesmos termos: profile internal-testing, APK, billing não funciona (DEVELOPER_ERROR)."
+  },
+  {
+    "query": "self_apply_campaign_id não aplicando os corações na campanha",
+    "type": "exact",
+    "gold": ["knowledge/engineering/2026-05-22-iap-vakinha-fluxo-self-apply-campaign-id-ponta-a-ponta.md"],
+    "note": "Nome exato da flag/param e o sintoma descrito na nota."
+  },
+  {
+    "query": "minha FlatList fica renderizando sem parar toda vez que a tela atualiza",
+    "type": "paraphrase",
+    "gold": ["knowledge/engineering/2026-05-08-vakinha-rn-armadilhas-comuns-em-componentes-react-native.md"],
+    "note": "Paráfrase de arrays/objetos estáticos e inline styles recriados a cada render; pouco overlap léxico com o título."
+  },
+  {
+    "query": "onde colocar os tipos em vez de deixar solto no arquivo da tela",
+    "type": "paraphrase",
+    "gold": ["knowledge/engineering/2026-04-28-vakinha-app-extracao-de-union-types-para-type-alias-em-arqui.md"],
+    "note": "Paráfrase de extrair union type para type alias no .interfaces.ts; palavras diferentes do título."
+  },
+  {
+    "query": "dá pra confiar no token que o app manda ou tenho que checar com o google?",
+    "type": "paraphrase",
+    "gold": ["knowledge/engineering/2026-05-19-google-play-billing-validacao-server-side-obrigatoria.md"],
+    "note": "Paráfrase da necessidade de validação server-side (forja/replay/mismatch), sem usar 'server-side' nem 'validação'."
+  },
+  {
+    "query": "iap acquirer google play no vakinha-api",
+    "type": "broad",
+    "gold": ["knowledge/engineering/2026-05-19-vakinha-android-iap-acquirer-flow-google-play-validation-pat.md"],
+    "note": "Termos muito comuns no corpus (iap, vakinha-api) + qualificador acquirer/google play."
+  },
+  {
+    "query": "android emulador expo travando na splash",
+    "type": "broad",
+    "gold": [
+      "knowledge/engineering/2026-05-19-android-emulator-expo-dev-client-splash-loop-usar-10-0-2-2-o.md",
+      "knowledge/engineering/2026-05-14-android-emulator-expo-dev-client-conectar-via-10-0-2-2.md"
+    ],
+    "note": "Termo comum 'android' + qualificador splash; as duas notas cobrem o mesmo problema (loop de splash, 10.0.2.2)."
+  },
+  {
+    "query": "como resolvemos compra iap duplicada com o listener disparando várias vezes?",
+    "type": "howdid",
+    "gold": ["knowledge/engineering/2026-05-22-react-native-iap-12-10-1-setup-patches-license-tester-e-race.md"],
+    "note": "Estilo 'como resolvemos'; nota trata race condition do purchaseUpdatedListener e dedup por processingTokensRef."
+  },
+  {
+    "query": "como a gente tratou os crashes nativos do crashlytics no android antes?",
+    "type": "howdid",
+    "gold": ["knowledge/engineering/2026-05-28-crashlytics-android-2-crashes-nativos-adiados-cropper-enoent.md"],
+    "note": "Estilo 'como resolvemos'; triagem de crashes nativos adiados (cropper ENOENT, expo-video, Fabric CME)."
+  },
+  {
+    "query": "regras de mensagem de commit vakinha: trailer da task e co-author",
+    "type": "multi",
+    "gold": [
+      "knowledge/engineering/2026-05-26-convencao-workspace-vakinha-formato-de-commit-com-trailer-vk.md",
+      "knowledge/engineering/2026-05-26-commit-vakinha-proibido-referenciar-outras-tasks-vk25-no-bod.md",
+      "knowledge/engineering/2026-05-28-commits-nao-usar-trailer-co-authored-by-claude-anthropic.md"
+    ],
+    "note": "Três notas complementares sobre convenção de commit: trailer VK25, não citar outra task, sem Co-Authored-By Claude."
+  },
+  {
+    "query": "validar compra do google play no backend e o lance do sku errado",
+    "type": "multi",
+    "gold": [
+      "knowledge/engineering/2026-05-19-google-play-billing-validacao-server-side-obrigatoria.md",
+      "knowledge/engineering/2026-05-19-vakinha-android-iap-acquirer-flow-google-play-validation-pat.md",
+      "knowledge/engineering/2026-06-03-bug-latente-acquirers-google-return-payment-usa-identifier-s.md"
+    ],
+    "note": "Validação server-side + acquirer flow + bug do SKU (return_payment usa identifier em vez de product_pack.sku)."
+  }
+]

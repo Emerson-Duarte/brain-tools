@@ -1,0 +1,94 @@
+[
+  {
+    "query": "admin-api branch nasce de master ou develop?",
+    "type": "exact",
+    "gold": ["knowledge/engineering/2026-05-28-vakinha-admin-api-branches-sempre-criadas-a-partir-de-master.md"],
+    "note": "Regra: toda branch de task no vakinha-admin-api sai de origin/master, nunca develop."
+  },
+  {
+    "query": "refund iap android 400 purchaseTokenDoesNotMatchProductId",
+    "type": "exact",
+    "gold": ["knowledge/engineering/2026-06-03-bug-latente-acquirers-google-return-payment-usa-identifier-s.md"],
+    "note": "Bug: return_payment usa identifier em vez de product_pack.sku; Google espera o SKU do Play."
+  },
+  {
+    "query": "cloudflared expor api local 403 blocked host rails",
+    "type": "exact",
+    "gold": ["knowledge/engineering/2026-06-03-tunelar-vakinha-api-local-com-cloudflared-para-testes-e2e-ia.md"],
+    "note": "Setup do túnel cloudflared, gotcha IPv6, config.hosts para o HostAuthorization e teste de vida."
+  },
+  {
+    "query": "google cobrou mas não tem compra no banco como achar",
+    "type": "paraphrase",
+    "gold": [
+      "knowledge/engineering/2026-06-03-diagnostico-de-compra-iap-orfa-google-cobrou-sem-purchase-no.md",
+      "knowledge/engineering/2026-06-05-runbook-conciliacao-de-orfas-iap-em-producao-backfill-diff-c.md"
+    ],
+    "note": "Diagnóstico de compra IAP órfã por purchase token no console; o runbook de conciliação em massa complementa."
+  },
+  {
+    "query": "obrigar usuário a atualizar app versão mínima bloquear compra",
+    "type": "paraphrase",
+    "gold": ["knowledge/engineering/2026-06-05-corte-de-versao-do-app-mecanismos-appupdateoption-e-break-ch.md"],
+    "note": "Corte de versão via BREAK_CHANGE_VERSION global e app_update_options por endpoint (426), gate nas superfícies de venda."
+  },
+  {
+    "query": "owner e cliente logados no mesmo browser pegou token errado",
+    "type": "paraphrase",
+    "gold": ["knowledge/engineering/2026-05-30-duas-audiencias-jwt-em-cookie-user-customer-num-mesmo-navega.md"],
+    "note": "Dois cookies JWT (User+Customer) no mesmo apex multiplexados num header Authorization; resolver cada audiência do próprio cookie."
+  },
+  {
+    "query": "eas build local android env não pega do .env",
+    "type": "broad",
+    "gold": ["knowledge/engineering/2026-06-03-build-local-android-eas-build-local-env-vem-do-eas-environme.md"],
+    "note": "eas build --local usa EAS Environment do profile, não o .env; override via env do eas.json, node version e keystore exposta."
+  },
+  {
+    "query": "vakinha-assets satori ssrf convenções template",
+    "type": "broad",
+    "gold": [
+      "knowledge/engineering/2026-06-20-vakinha-assets-convencoes-de-engenharia-satori-ssrf-contrato.md",
+      "knowledge/engineering/2026-06-21-vakinha-assets-padroes-de-tipagem-lint-e-formatacao.md"
+    ],
+    "note": "Convenções do card-render-service: JSX sem React, schema zod como manifesto, resolveImage anti-SSRF; nota irmã cobre lint/tipagem."
+  },
+  {
+    "query": "como resolvemos as compras órfãs iap em produção antes",
+    "type": "howdid",
+    "gold": [
+      "knowledge/engineering/2026-06-05-runbook-conciliacao-de-orfas-iap-em-producao-backfill-diff-c.md",
+      "knowledge/engineering/2026-06-03-diagnostico-de-compra-iap-orfa-google-cobrou-sem-purchase-no.md"
+    ],
+    "note": "Runbook de conciliação em massa (backfill + diff CSV + refund em lote orders:refund); diagnóstico unitário complementa."
+  },
+  {
+    "query": "como testamos o app contra a api rodando na minha máquina",
+    "type": "howdid",
+    "gold": [
+      "knowledge/engineering/2026-06-03-runbook-testar-app-vakinha-contra-api-local-via-tunel-e2e-co.md",
+      "knowledge/engineering/2026-06-03-tunelar-vakinha-api-local-com-cloudflared-para-testes-e2e-ia.md",
+      "knowledge/engineering/2026-06-03-build-local-android-eas-build-local-env-vem-do-eas-environme.md"
+    ],
+    "note": "Runbook E2E completo (LAN + cloudflared + build local); as notas de túnel e de build local são as peças referenciadas."
+  },
+  {
+    "query": "rtdn google play acknowledge consume auto refund 3 dias sidekiq",
+    "type": "multi",
+    "gold": [
+      "knowledge/engineering/2026-06-03-iap-rtdn-runbook-e2e-comportamento-real-das-notificacoes-val.md",
+      "knowledge/architecture/2026-06-03-iap-pending-first-rtdn-garantia-de-registro-de-compra-decisa.md",
+      "knowledge/engineering/2026-06-03-diagnostico-de-compra-iap-orfa-google-cobrou-sem-purchase-no.md"
+    ],
+    "note": "Runbook RTDN (opt-in one-time, acknowledge é a garantia, Sidekiq up) + decisão pending-first + causa raiz da órfã."
+  },
+  {
+    "query": "vakinha-web montar tela com client-kit e i18n",
+    "type": "multi",
+    "gold": [
+      "knowledge/engineering/2026-06-24-vakinha-web-montar-ui-com-client-kit-section-typography-butt.md",
+      "knowledge/engineering/2026-06-24-vakinha-web-i18n-inicializa-dentro-do-layout-import-i18n.md"
+    ],
+    "note": "Montar UI priorizando client-kit (Section/Typography/Button) + i18n inicializado no Layout (import 'i18n')."
+  }
+]

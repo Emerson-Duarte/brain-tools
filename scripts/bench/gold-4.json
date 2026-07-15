@@ -1,0 +1,92 @@
+[
+  {
+    "query": "convenção vakinha-web actions por rota e svgr",
+    "type": "exact",
+    "gold": ["knowledge/engineering/2026-06-30-vakinha-web-convencoes-confirmadas-actions-por-rota-svgr-sec.md"],
+    "note": "Nota exata de convenções do vakinha-web (actions espelham rota, svgr, Section, naming on*)."
+  },
+  {
+    "query": "sidekiq embedded no puma pra free tier do render",
+    "type": "exact",
+    "gold": ["knowledge/engineering/2026-07-12-sidekiq-8-embedded-no-puma-worker-gratis-em-free-tier-render.md"],
+    "note": "Nota exata sobre Sidekiq 8 embedded no Puma como worker grátis no Render."
+  },
+  {
+    "query": "workflow do github actions em subpasta não roda",
+    "type": "exact",
+    "gold": ["knowledge/engineering/2026-07-12-github-actions-em-subdiretorio-nunca-roda-workflows-so-valem.md"],
+    "note": "Gotcha: GitHub só roda workflows em .github/workflows na raiz."
+  },
+  {
+    "query": "ranking de artilheiros da copa360 vindo errado",
+    "type": "paraphrase",
+    "gold": ["knowledge/engineering/2026-07-13-copa360-estatisticas-truncava-a-artilharia-pelo-teto-de-1000.md"],
+    "note": "Bug de truncamento em 1000 linhas do Supabase zerando gols do mata-mata; paráfrase do sintoma."
+  },
+  {
+    "query": "fazer coração pulsar no vídeo de share sem tremer",
+    "type": "paraphrase",
+    "gold": ["knowledge/engineering/2026-07-02-vakinha-assets-pulsar-escalar-qualquer-elemento-do-video-vai.md"],
+    "note": "Scale animado vai no ffmpeg, nunca transform:scale no satori (edge-crawl)."
+  },
+  {
+    "query": "endpoint pro usuário apagar a própria conta anonimizando os dados",
+    "type": "paraphrase",
+    "gold": ["knowledge/engineering/2026-07-12-anonimizacao-lgpd-de-conta-global-em-app-multi-tenant-indice.md"],
+    "note": "Anonimização LGPD (não deletar), índice único parcial, revogação dupla de JWT."
+  },
+  {
+    "query": "vakinha-app android travando no splash do emulador",
+    "type": "broad",
+    "gold": [
+      "knowledge/engineering/2026-07-08-vakinha-app-android-receita-definitiva-rodar-estavel-no-emul.md",
+      "knowledge/engineering/2026-05-19-android-emulator-expo-dev-client-splash-loop-usar-10-0-2-2-o.md",
+      "knowledge/engineering/2026-05-14-android-emulator-expo-dev-client-conectar-via-10-0-2-2.md"
+    ],
+    "note": "Termo comum android + qualifier splash. A receita definitiva complementa as duas notas anteriores de splash loop/conexão."
+  },
+  {
+    "query": "rls multi-tenant no rails com structure.sql",
+    "type": "broad",
+    "gold": [
+      "knowledge/engineering/2026-07-12-schema-format-sql-com-rls-no-comments-e-obrigatorio-para-db-.md",
+      "knowledge/architecture/2026-05-30-rls-multi-tenant-no-rails-acts-as-tenant-postgres-rls-force-.md"
+    ],
+    "note": "rails + rls qualifier. schema_format :sql (--no-comments) complementa a nota base de RLS multi-tenant."
+  },
+  {
+    "query": "como a gente testou IAP no sandbox da apple?",
+    "type": "howdid",
+    "gold": [
+      "knowledge/engineering/2026-07-03-iap-ios-guia-passo-a-passo-de-testes-no-sandbox-apple-copia-.md",
+      "knowledge/engineering/2026-07-03-plano-de-teste-e2e-iap-ios-storekit-2-copia-integral-de-vaki.md"
+    ],
+    "note": "Guia operacional de sandbox + plano de teste E2E (T01-T18) são o par de referência de testes IAP iOS."
+  },
+  {
+    "query": "como resolvemos dedup com coluna null no postgres antes?",
+    "type": "howdid",
+    "gold": ["knowledge/engineering/2026-07-13-postgres-indice-unico-null-safe-com-coalesce-para-dedup.md"],
+    "note": "Índice único funcional com COALESCE (NULLs contam como distintos por padrão)."
+  },
+  {
+    "query": "auditoria do iap ios storekit 2 contra a spec da apple",
+    "type": "multi",
+    "gold": [
+      "knowledge/engineering/2026-07-03-auditoria-iap-ios-storekit-2-relatorio-completo-copia-integr.md",
+      "knowledge/engineering/2026-07-03-auditoria-iap-ios-storekit-2-vs-spec-apple-achados-e-fixes-2.md",
+      "knowledge/notes/2026-07-03-iap-ios-storekit-2-documento-de-retomada-da-feature-copia-in.md"
+    ],
+    "note": "Cluster da auditoria StoreKit 2: relatório completo + resumo/achados + documento de retomada da feature."
+  },
+  {
+    "query": "como a vakinha-api chama o vakinha-assets pra gerar card e vídeo",
+    "type": "multi",
+    "gold": [
+      "knowledge/references/2026-06-20-vakinha-assets-integracao-rails-vakinha-api-movido-do-repo.md",
+      "knowledge/references/2026-06-21-vakinha-assets-integracao-de-video-na-vakinha-api-post-async.md",
+      "knowledge/references/2026-06-21-vakinha-assets-overview-capacidades-imagem-video-como-usar-e.md"
+    ],
+    "note": "Integração Rails do card (síncrono) + vídeo (async/polling) + overview de capacidades do microserviço."
+  }
+]

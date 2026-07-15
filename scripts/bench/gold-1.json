@@ -1,0 +1,74 @@
+[
+  {
+    "query": "iap BaseCreator service object vakinha-api",
+    "type": "exact",
+    "gold": ["knowledge/architecture/2026-05-13-iap-service-object-pattern-iap-basecreator.md"],
+    "note": "A nota descreve exatamente o padrão de service object Iap::BaseCreator e suas subclasses na vakinha-api."
+  },
+  {
+    "query": "migrations vakinha-api e admin-api usando o mesmo banco",
+    "type": "exact",
+    "gold": ["knowledge/architecture/2026-06-25-vakinha-api-e-admin-api-compartilham-o-mesmo-banco.md"],
+    "note": "Trata da regra de ownership de migrations e schema.rb quando as duas APIs Rails compartilham o mesmo Postgres."
+  },
+  {
+    "query": "acts_as_tenant postgres RLS force multi-tenant rails",
+    "type": "exact",
+    "gold": ["knowledge/architecture/2026-05-30-rls-multi-tenant-no-rails-acts-as-tenant-postgres-rls-force-.md"],
+    "note": "Usa os mesmos termos técnicos: acts_as_tenant + Postgres RLS FORCE como backstop de isolamento multi-tenant."
+  },
+  {
+    "query": "link do site abrindo na tela errada do aplicativo",
+    "type": "paraphrase",
+    "gold": ["knowledge/architecture/2026-05-30-analise-de-deep-linking-vakinha-web-vakinha-app-gaps-e-catch.md"],
+    "note": "Descreve os catch-alls e gaps de deep/universal linking que fazem URLs do site abrirem na tela errada (ou como campanha inexistente) no app."
+  },
+  {
+    "query": "no iphone comprar coracao vai pra loja da apple e nao no cartao",
+    "type": "paraphrase",
+    "gold": ["knowledge/architecture/2026-05-06-vakinha-app-fluxo-completo-da-loja-de-coracoes-iap-vs-normal.md"],
+    "note": "Explica a flag iosRestriction que força IAP (StoreKit Apple) em vez do checkout web por cartao na loja de coracoes do iOS."
+  },
+  {
+    "query": "diferenca de pagamento entre android e ios na compra de coracoes",
+    "type": "paraphrase",
+    "gold": ["knowledge/architecture/2026-05-21-vakinha-app-fluxo-de-compra-por-plataforma-iap-web.md", "knowledge/architecture/2026-05-06-vakinha-app-fluxo-completo-da-loja-de-coracoes-iap-vs-normal.md"],
+    "note": "Ambas mapeiam o fluxo de compra por plataforma (Android IAP, iOS restrito IAP, iOS livre web) e os endpoints/validacoes de cada uma."
+  },
+  {
+    "query": "iap android checkout pending-first",
+    "type": "broad",
+    "gold": ["knowledge/architecture/2026-06-03-iap-android-pending-first-checkout-flow-vakinha-app.md", "knowledge/architecture/2026-06-04-iap-android-trace-passo-a-passo-do-fluxo-feliz-intent-confir.md"],
+    "note": "A primeira detalha o fluxo pending-first de checkout Android no app; a segunda faz o trace passo a passo do mesmo fluxo feliz."
+  },
+  {
+    "query": "vakinha-api customer-api-key header nos frontends",
+    "type": "broad",
+    "gold": ["knowledge/architecture/2026-05-12-mapa-de-projetos-vakinha-relacoes-entre-servicos.md"],
+    "note": "O mapa de projetos documenta o header Customer-Api-Key e as env vars de auth de cada frontend que consome a vakinha-api."
+  },
+  {
+    "query": "como a gente resolveu as compras orfas de iap",
+    "type": "howdid",
+    "gold": ["knowledge/architecture/2026-06-03-iap-pending-first-rtdn-garantia-de-registro-de-compra-decisa.md", "knowledge/engineering/2026-06-03-diagnostico-de-compra-iap-orfa-google-cobrou-sem-purchase-no.md", "knowledge/engineering/2026-06-05-runbook-conciliacao-de-orfas-iap-em-producao-backfill-diff-c.md"],
+    "note": "A decisao pending-first+RTDN resolveu a raiz das compras orfas; as outras cobrem o diagnostico e o runbook de conciliacao em producao."
+  },
+  {
+    "query": "como fizemos o video de compartilhamento estilo gofundme",
+    "type": "howdid",
+    "gold": ["knowledge/architecture/2026-05-31-handoff-geracao-de-video-de-compartilhamento-estilo-gofundme.md", "knowledge/architecture/2026-05-31-gofundme-como-geram-o-video-de-share-template-ffmpeg-e-a-sho.md", "knowledge/architecture/2026-05-31-branch-feature-campaign-share-video-estrutura-sharevideo-vak.md", "knowledge/architecture/2026-06-23-vakinha-assets-render-de-video-via-aws-lambda-atras-do-contr.md"],
+    "note": "Handoff + engenharia reversa do GoFundMe + branch ShareVideo + render final via Lambda cobrem toda a trajetoria do video de share."
+  },
+  {
+    "query": "onde fica o backend e o front das pesquisas surveys",
+    "type": "multi",
+    "gold": ["knowledge/architecture/2026-06-29-feature-surveys-mapa-cross-repo-admin-cria-user-responde.md", "knowledge/architecture/2026-06-30-surveys-formato-de-resposta-migrado-para-value-unificado-kin.md", "knowledge/engineering/2026-06-30-rodar-vakinha-admin-api-vakinha-manager-web-localmente-admin.md"],
+    "note": "O mapa cross-repo mostra quais repos fazem admin/user, a segunda atualiza o formato de resposta, e a terceira ensina a rodar o admin de surveys local."
+  },
+  {
+    "query": "vakinha-assets como gera card e video de compartilhamento",
+    "type": "multi",
+    "gold": ["knowledge/architecture/2026-06-20-vakinha-assets-card-render-service-satori-png.md", "knowledge/architecture/2026-06-20-vakinha-assets-refactor-para-microservico-puro-galeria-2026-.md", "knowledge/architecture/2026-06-23-vakinha-assets-render-de-video-via-aws-lambda-atras-do-contr.md"],
+    "note": "As tres descrevem o microservico vakinha-assets: render de card via Satori, o refactor/galeria e o render de video via Lambda."
+  }
+]
