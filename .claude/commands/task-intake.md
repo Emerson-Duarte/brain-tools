@@ -60,36 +60,53 @@ Escrever e o usuário **aprova antes de codar**:
 
 Não avance sem aprovação explícita deste bloco.
 
-## Fase 4 — Criar task no Jira (fim do discovery)
-`get_behavior(context="jira task creation")`, então:
-1. Confirmar projeto Jira de destino.
-2. **Listar labels existentes e usar só eles — nunca criar label** (se nenhum encaixa, perguntar).
-3. Montar descrição a partir da Fase 3 (inclui o plano de verificação).
-4. **Perguntar assignee** (`AskUserQuestion`: atribuir a Emerson / sem assignee).
-5. Multi-project → uma issue por projeto + `createIssueLink`.
-6. `createJiraIssue` e retornar o link. Daqui pra frente o código nasce rastreável.
+## Fase 4 — Card no Jira (fim do discovery)
+`get_behavior(context="jira task creation")`. **Criar** (task nova) OU **enriquecer** (card já
+existe — comum quando UX/PM abriu com só Figma + uma frase):
+1. Confirmar projeto Jira de destino (default: VK25).
+2. **Labels: usar só os existentes — nunca criar label** (se nenhum encaixa, perguntar).
+3. Descrição a partir da Fase 3 (objetivo + AC + plano de verificação). Card existente →
+   **acrescentar/atualizar sem apagar** o que a UX/PM escreveu.
+4. **Assignee: sempre atribuir ao Emerson** — decisão fixa, **não perguntar**.
+5. **Mover o card para "Development"** (transição "Start development"; resolver o id/nome exato em
+   runtime via `getTransitionsForJiraIssue`, pois varia por status atual).
+6. Multi-project → uma issue por projeto + `createIssueLink`.
+7. `createJiraIssue` (nova) ou `editJiraIssue` + `transitionJiraIssue` (existente); retornar o link.
+   Daqui pra frente o código nasce rastreável.
 
-## Fase 5 — Execução
-- Branch a partir da key do Jira (padrão do projeto).
-- Subir o(s) projeto(s) pela Matriz de Rodagem.
-- Implementar seguindo padrões do projeto. Se o índice do projeto declara agents `planner-task` /
-  `implementer-task`, **use-os** (sem entrar no SDD); senão, trabalhe direto.
-- Rodar gates do projeto (lint / type-check / rspec / rake).
-- Commit via `commit-message.md`.
+> ⚠️ Ações externas (editar/mover/atribuir card) — confirmar antes de executar.
+
+## Fase 5 — Execução (em git worktree isolada)
+- **Worktree** (skill `worktree`): do repo alvo, rodar
+  `~/.claude/skills/worktree/scripts/worktree.sh add task/<KEY>/<slug> develop`. Nasce com
+  `node_modules`/`.env`/segredos symlinkados — pronta pra rodar, sem reinstalar. Com **pnpm**, se o
+  lockfile mudar na branch, `rm node_modules && pnpm install` na worktree (store global reaproveita).
+- Subir o(s) projeto(s) pela Matriz de Rodagem **dentro da worktree** (atenção à colisão de porta com
+  o checkout principal — usar porta alternativa).
+- Implementar seguindo padrões do projeto. Se o índice declara agents `planner-task` /
+  `implementer-task`, **use-os** (sem SDD); senão, direto.
+- Rodar gates do projeto (lint / type-check / rspec / rake). Commit via `commit-message.md`.
 
 ## Fase 6 — Verificação por simulação de usuário  ⚠️ GATE
 Rodar o cenário do plano da Fase 3 na ferramenta certa e **provar que os AC passam**, comparando com
 o baseline da Fase 2: Maestro dirige o app / Playwright abre o navegador / RSpec/rake para lógica.
 Falhou → volta pra Fase 5. Guardar a evidência (comando/flow que passou).
 
-## Fase 7 — PR
+## Fase 7 — PR + mover card
 `pr-create.md` (**fluxo direto — nunca `pr-create-sdd.md`**): checar hard gates (git identity,
 upstream, working tree), vincular a key do Jira + a evidência de verificação no corpo, abrir só após
-confirmação.
+confirmação. **Depois do PR aberto (pós-revisões/análises), mover o card para "Code Review"**
+(`transitionJiraIssue`; resolver o id em runtime — só aparece a partir de "Development").
 
 ## Fase 8 — Captura (opcional)
 Oferecer `add_note` para aprendizados e lacunas de contexto do projeto (feedback loop). **Não**
 oferecer `/brain-capture` nem `/sdd-capture`.
+
+## Fase 9 — Pós-merge (quando o PR for mergeado)
+- Card → "Done" se o board exigir (`transitionJiraIssue`).
+- **Encerrar a worktree**: `~/.claude/skills/worktree/scripts/worktree.sh remove task/<KEY>/<slug>`
+  (desfaz symlinks + `git worktree remove`). Se sobrar trabalho não commitado, o git recusa — só
+  `--force` com confirmação explícita.
 
 ---
 

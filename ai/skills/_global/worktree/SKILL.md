@@ -13,13 +13,13 @@ tools: Bash, Read
 
 # worktree — worktrees prontas pra usar
 
-Script: `~/.claude/skills/worktree/scripts/worktree.sh` (rodar de dentro do repo alvo).
+Script canônico: `<brain-tools>/ai/skills/_global/worktree/scripts/worktree.sh`, symlinkado em `~/.claude/skills/worktree/scripts/worktree.sh`. Rodar **de dentro do repo alvo** (nunca do workspace raiz).
 
 ## Comandos
 
 ```bash
-# criar (branch nova ou existente)
-cd /Users/dev/www/vakinha/<repo>
+# criar (branch nova ou existente) — cd no repo alvo primeiro
+cd <repo>
 ~/.claude/skills/worktree/scripts/worktree.sh add <branch> [base]
 
 # remover (desfaz symlinks, depois git worktree remove)
@@ -36,7 +36,7 @@ cd /Users/dev/www/vakinha/<repo>
 
 - **Localização:** `<pai-do-repo>/.worktrees/<repo>/<branch-slug>` — ex.:
   `worktree.sh add task/VK25-1234/fix-pix` no vakinha-api cria
-  `/Users/dev/www/vakinha/.worktrees/vakinha-api/task-VK25-1234-fix-pix`.
+  `<workspace>/.worktrees/vakinha-api/task-VK25-1234-fix-pix`.
 - **Base default** (branch nova, sem base explícita): `develop` → `main` → `master` → HEAD.
 - **Symlinks:** tudo que o gitignore ignora e existe no checkout principal,
   EXCETO caches/artefatos que não podem ser compartilhados entre worktrees:
@@ -66,8 +66,10 @@ cd /Users/dev/www/vakinha/<repo>
 
 - `node_modules` é **compartilhado** via symlink. Se a branch mudar
   `package.json`/lockfile, trocar o link por instalação real na worktree:
-  `rm node_modules && npm install` (ou yarn). Mesmo raciocínio pra
-  `Gemfile` + `vendor/bundle` em Rails.
+  `rm node_modules && pnpm install` (ou `yarn`/`npm` conforme o repo). Com
+  **pnpm** o custo é baixo — a store é global/content-addressable, então
+  `pnpm install` na worktree reaproveita os pacotes já baixados (quase sem
+  rede). Mesmo raciocínio pra `Gemfile` + `vendor/bundle` em Rails.
 - Dois dev servers simultâneos (main + worktree) funcionam porque caches de
   build ficam fora do compartilhamento — mas portas colidem (3000/3001),
   então subir com porta alternativa.

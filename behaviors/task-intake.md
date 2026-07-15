@@ -79,9 +79,13 @@ Só pergunte o que o brain **não** respondeu.
 
 - **git identity**: NUNCA commitar com `user.email == noreply@anthropic.com` ou `user.name == Claude`.
   Pare e instrua o usuário.
-- **Jira**: criado no **fim do discovery** (antes de codar). Usar só labels **existentes** (nunca
-  criar label); **perguntar assignee** antes de atribuir. Ver `get_behavior(context="jira task
-  creation")`.
+- **Jira**: criado/enriquecido no **fim do discovery** (antes de codar). Labels só **existentes**
+  (nunca criar). **Sempre atribuir ao Emerson** e **mover o card para "Development"** ao assumir;
+  **mover para "Code Review"** ao abrir o PR. Card já existente (UX/PM abriu com só Figma) →
+  enriquecer **sem apagar** o texto original. Ver `get_behavior(context="jira task creation")`.
+- **Worktree**: executar em **git worktree isolada** (skill `worktree`), criada a partir de
+  `develop`, e **encerrá-la quando o PR mergear** (`worktree.sh remove`). pnpm torna o
+  `node_modules` compartilhado barato de recriar se o lockfile mudar.
 - **PR/commit**: sempre via `pr-create.md` + `commit-message.md`. Nunca template genérico, nunca
   `pr-create-sdd.md`.
 - **Sub-agents**: recebem os contratos no prompt — não assumem que "sabem".
