@@ -39,8 +39,10 @@ set -euo pipefail
 # ── Configuração ─────────────────────────────────────────────────────────────
 TOOLS_REPO_URL="${TOOLS_REPO_URL:-https://github.com/Emerson-Duarte/brain-tools.git}"
 DATA_REPO_URL="${DATA_REPO_URL:-https://github.com/Emerson-Duarte/brain.git}"
-TOOLS_DIR="${TOOLS_DIR:-$HOME/.brain-tools}"
-DATA_DIR="${DATA_DIR:-$HOME/.brain-data}"
+# Vazios por padrão → descoberta automática abaixo (após checar deps).
+# Passe TOOLS_DIR=/x DATA_DIR=/y só se quiser forçar um path específico.
+TOOLS_DIR="${TOOLS_DIR:-}"
+DATA_DIR="${DATA_DIR:-}"
 TOOLS_BRANCH="${TOOLS_BRANCH:-main}"
 DATA_BRANCH="${DATA_BRANCH:-main}"
 GIT_EMAIL="${GIT_EMAIL:-pduarte.emerson@gmail.com}"
@@ -52,7 +54,7 @@ info()  { echo -e "${GREEN}[brain-bootstrap]${NC} $*"; }
 warn()  { echo -e "${YELLOW}[brain-bootstrap]${NC} $*"; }
 error() { echo -e "${RED}[brain-bootstrap]${NC} $*" >&2; exit 1; }
 
-info "TOOLS_DIR=$TOOLS_DIR  DATA_DIR=$DATA_DIR"
+# (paths resolvidos pela descoberta automática logo após o check de deps)
 
 # ── Checagem de dependências ──────────────────────────────────────────────────
 check_dep() { command -v "$1" >/dev/null 2>&1 || error "'$1' não encontrado no PATH"; }
@@ -60,6 +62,74 @@ check_dep git
 check_dep node
 check_dep npm
 check_dep python3
+
+# ── Descoberta automática dos repos (não precisa passar TOOLS_DIR/DATA_DIR) ───
+# O script vive em <brain-tools>/scripts/; resolve o próprio checkout e acha o
+# brain (dados) como irmão, por instalação anterior (~/.claude.json) ou busca.
+SCRIPT_PATH="${BASH_SOURCE[0]:-}"
+SCRIPT_DIR=""
+[[ -n "$SCRIPT_PATH" && -f "$SCRIPT_PATH" ]] && \
+  SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" >/dev/null 2>&1 && pwd)"
+
+# $1=dir  $2=regex do remote → true se for checkout git com esse origin
+_is_repo() { [[ -d "$1/.git" ]] && git -C "$1" remote get-url origin 2>/dev/null | grep -qE "$2"; }
+
+# lê BRAIN_TOOLS_PATH / BRAIN_DATA_PATH de uma instalação anterior em ~/.claude.json
+_from_claude_json() {
+  local cj="$HOME/.claude.json"; [[ -f "$cj" ]] || return 1
+  python3 - "$cj" "$1" <<'PY' 2>/dev/null
+import json,sys
+try:
+    v=json.load(open(sys.argv[1])).get("mcpServers",{}).get("brain",{}).get("env",{}).get(sys.argv[2],"")
+except Exception:
+    v=""
+print(v)
+PY
+}
+
+if [[ -z "$TOOLS_DIR" ]]; then
+  cand=""
+  [[ -n "$SCRIPT_DIR" ]] && cand="$(cd "$SCRIPT_DIR/.." >/dev/null 2>&1 && pwd)"
+  if [[ -n "$cand" ]] && _is_repo "$cand" "/brain-tools(\.git)?$"; then
+    TOOLS_DIR="$cand"
+  else
+    cand="$(_from_claude_json BRAIN_TOOLS_PATH || true)"
+    if [[ -n "$cand" ]] && _is_repo "$cand" "/brain-tools(\.git)?$"; then
+      TOOLS_DIR="$cand"
+    else
+      for root in "$HOME/www/vakinha" "$HOME/www" "$HOME"; do
+        if _is_repo "$root/brain-tools" "/brain-tools(\.git)?$"; then TOOLS_DIR="$root/brain-tools"; break; fi
+      done
+    fi
+  fi
+fi
+
+if [[ -z "$DATA_DIR" ]]; then
+  cand=""
+  if [[ -n "$TOOLS_DIR" ]]; then
+    parent="$(cd "$TOOLS_DIR/.." >/dev/null 2>&1 && pwd)"
+    for n in brain brain-data; do
+      if _is_repo "$parent/$n" "/brain(\.git)?$"; then DATA_DIR="$parent/$n"; break; fi
+    done
+  fi
+  if [[ -z "$DATA_DIR" ]]; then
+    cand="$(_from_claude_json BRAIN_DATA_PATH || true)"
+    if [[ -n "$cand" ]] && _is_repo "$cand" "/brain(\.git)?$"; then DATA_DIR="$cand"; fi
+  fi
+  if [[ -z "$DATA_DIR" ]]; then
+    for root in "$HOME/www/vakinha" "$HOME/www" "$HOME"; do
+      for n in brain brain-data; do
+        if _is_repo "$root/$n" "/brain(\.git)?$"; then DATA_DIR="$root/$n"; break 2; fi
+      done
+    done
+  fi
+fi
+
+# Fallback final (máquina nova via curl|bash, nada clonado): clona nos defaults
+TOOLS_DIR="${TOOLS_DIR:-$HOME/.brain-tools}"
+DATA_DIR="${DATA_DIR:-$HOME/.brain-data}"
+info "repos resolvidos: TOOLS_DIR=$TOOLS_DIR"
+info "repos resolvidos: DATA_DIR=$DATA_DIR"
 
 # ── Clone / pull idempotente ──────────────────────────────────────────────────
 sync_repo() {
@@ -256,6 +326,24 @@ else
   info "git user.name já correto: $GIT_NAME"
 fi
 
+# ── Atalho brain-sync (reexecutar sem lembrar o path) ────────────────────────
+SHIM_DIR="$HOME/.local/bin"
+SHIM="$SHIM_DIR/brain-sync"
+SHIM_TARGET="$TOOLS_DIR/scripts/environment-bootstrap.sh"
+if [[ -f "$SHIM_TARGET" ]]; then
+  mkdir -p "$SHIM_DIR"
+  if [[ -L "$SHIM" && "$(readlink "$SHIM")" == "$SHIM_TARGET" ]]; then
+    info "atalho 'brain-sync' já instalado"
+  else
+    ln -sf "$SHIM_TARGET" "$SHIM"
+    info "atalho instalado: brain-sync → $SHIM_TARGET"
+  fi
+  case ":$PATH:" in
+    *":$SHIM_DIR:"*) : ;;
+    *) warn "para usar 'brain-sync' de qualquer lugar, adicione ao seu shell rc: export PATH=\"\$HOME/.local/bin:\$PATH\"" ;;
+  esac
+fi
+
 # ── Resumo ────────────────────────────────────────────────────────────────────
 echo ""
 echo -e "${GREEN}════════════════════════════════════════════════${NC}"
@@ -273,6 +361,7 @@ echo "  ✓ ~/.claude/commands/ (slash commands globais, do repo público)"
 echo "  ✓ ~/.claude/skills/worktree (skill worktree, do repo público)"
 echo "  ✓ CLAUDE.md/AGENTS.md por projeto (do brain-data, via projects.conf)"
 echo "  ✓ Git identity global: $GIT_NAME <$GIT_EMAIL>"
+echo "  ✓ Atalho: brain-sync (~/.local/bin/brain-sync) — reexecuta este bootstrap"
 echo ""
 echo "  Slash commands disponíveis:"
 for f in "$COMMANDS_DST_DIR"/*.md; do
