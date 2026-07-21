@@ -92,6 +92,35 @@ if [[ "$USE_DOCKER" == true ]]; then
   docker build -t brain-mcp:latest "$TOOLS_DIR"
 fi
 
+# ── Helper: resolve path estável do Node (evita fnm multishell efêmero) ──────
+resolve_stable_node() {
+  local node_bin
+  node_bin="$(command -v node)"
+
+  # Se é um path fnm_multishells (efêmero), resolve pro real
+  if [[ "$node_bin" == *"fnm_multishells"* ]]; then
+    # Tenta readlink (segue symlink pra versão real)
+    local resolved
+    resolved="$(readlink -f "$node_bin" 2>/dev/null || readlink "$node_bin" 2>/dev/null || true)"
+    if [[ -n "$resolved" && -x "$resolved" && "$resolved" != *"fnm_multishells"* ]]; then
+      echo "$resolved"
+      return
+    fi
+    # Fallback: descobre a versão ativa e monta o path direto
+    if command -v fnm &>/dev/null; then
+      local ver
+      ver="$(fnm current 2>/dev/null)"
+      if [[ -n "$ver" ]]; then
+        local stable="$HOME/.local/share/fnm/node-versions/$ver/installation/bin/node"
+        [[ -x "$stable" ]] && { echo "$stable"; return; }
+      fi
+    fi
+  fi
+
+  # Path já é estável (homebrew, nvm, sistema, etc.)
+  echo "$node_bin"
+}
+
 # ── Configura Claude Code (~/.claude.json) ────────────────────────────────────
 configure_claude_code() {
   local CLAUDE_JSON="$HOME/.claude.json"
@@ -340,21 +369,33 @@ configure_copilot_cli() {
 
   local MCP_CFG="$HOME/.copilot/mcp-config.json"
 
-  if [[ -f "$MCP_CFG" ]] && python3 -c "import json,sys; d=json.load(open('$MCP_CFG')); sys.exit(0 if 'brain' in d.get('mcpServers',{}) else 1)" 2>/dev/null; then
-    warn "brain já está em ~/.copilot/mcp-config.json — pulando"
+  # Resolve o path estável do Node (evita paths efêmeros de fnm multishell)
+  local NODE_BIN
+  NODE_BIN="$(resolve_stable_node)"
+
+  # Sempre reescreve — o path do Node pode ter mudado (fnm multishell efêmero)
+  if [[ -f "$MCP_CFG" ]] && python3 -c "
+import json,sys
+d=json.load(open('$MCP_CFG'))
+srv=d.get('mcpServers',{}).get('brain',{})
+sys.exit(0 if srv.get('command','') == '$NODE_BIN' else 1)
+" 2>/dev/null; then
+    warn "brain já está em ~/.copilot/mcp-config.json com Node estável — pulando"
     return
   fi
 
-  local NODE_BIN
-  NODE_BIN="$(command -v node)"
-
   # copilot mcp add escreve em ~/.copilot/mcp-config.json
   # --env deve vir antes do -- (separador de comando)
+  # Remove entrada antiga se existir (evita duplicata)
+  if [[ -f "$MCP_CFG" ]] && python3 -c "import json,sys; d=json.load(open('$MCP_CFG')); sys.exit(0 if 'brain' in d.get('mcpServers',{}) else 1)" 2>/dev/null; then
+    copilot mcp remove brain 2>/dev/null || true
+  fi
+
   copilot mcp add brain \
     --env "BRAIN_TOOLS_PATH=$TOOLS_DIR" \
     --env "BRAIN_DATA_PATH=$DATA_DIR" \
     -- "$NODE_BIN" "$MCP_DIR/dist/index.js" 2>/dev/null \
-    && info "Copilot CLI MCP configurado (~/.copilot/mcp-config.json)" \
+    && info "Copilot CLI MCP configurado (~/.copilot/mcp-config.json) — Node: $NODE_BIN" \
     || warn "Falha ao configurar MCP do Copilot CLI via 'copilot mcp add' — configure manualmente"
 }
 
